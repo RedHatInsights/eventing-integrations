@@ -35,11 +35,12 @@ it running in background (detached).
 To run it locally with dev mode execute:
 
 ```
-$ ../mvnw quarkus:dev -Dquarkus.kafka.devservices.enabled=false
+$ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dquarkus.kafka.devservices.enabled=false
 ```
 
-The integration would connect to Kafka on `platform.notifications.tocamel`
-and would pass messages to configured Splunk.
+The integration would connect to Kafka defined within `ACG_CONFIG`
+listenting on `platform.notifications.tocamel`.
+
 
 ### Trying it out
 

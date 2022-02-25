@@ -5,7 +5,7 @@
     "kafka": {
         "brokers": [
             {
-                "hostname": "localhost:9092",
+                "hostname": "localhost",
                 "port": 29092
             }
         ],
