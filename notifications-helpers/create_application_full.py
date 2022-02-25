@@ -66,9 +66,7 @@ print(">>> create splunk endpoint")
 props = {
     "url": splunk_url,
     "sub_type": "splunk",
-    "extras": {
-        "token": splunk_token
-    }
+    "secret_token": splunk_token
 }
 ep_id = helpers.create_endpoint("splunk", x_rh_id, props, "camel")
 

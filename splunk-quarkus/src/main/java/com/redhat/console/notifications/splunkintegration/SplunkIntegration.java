@@ -141,14 +141,14 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                         .authMethod("Basic")
                         .httpMethod("POST")
                         .authUsername("x")
-                        .authPassword("$simple{headers.extras[token]}"))
+                        .authPassword("$simple{headers.metadata[secret_token]}"))
                 .otherwise()
                     .toD(https("$simple{headers.metadata[url].replaceFirst('^https://', '')}/services/collector/event")
                         .authenticationPreemptive(true)
                         .authMethod("Basic")
                         .httpMethod("POST")
                         .authUsername("x")
-                        .authPassword("$simple{headers.extras[token]}"))
+                        .authPassword("$simple{headers.metadata[secret_token]}"))
             // Log after a successful send.
             .log("Response ${body}");
     }
