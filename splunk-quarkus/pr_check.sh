@@ -19,6 +19,6 @@ DOCKERFILE="splunk-quarkus/Dockerfile.jvm"
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
-source $CICD_ROOT/build.sh
-source $APP_ROOT/deploy_ephemeral_env.sh
+source "$CICD_ROOT/build.sh"
+source "$CICD_ROOT/deploy_ephemeral_env.sh"
 #source $CICD_ROOT/cji_smoke_test.sh
