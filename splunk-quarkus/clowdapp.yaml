@@ -13,6 +13,8 @@ objects:
       clowdapp: eventing-splunk-quarkus
   spec:
     envName: ${ENV_NAME}
+    testing:
+      iqePlugin: eventing
     kafkaTopics:
     - topicName: platform.notifications.ingress
       partitions: 3
