@@ -55,7 +55,7 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --topic platform.not
 
 Here is an example CloudEvent for testing:
 ```
-{"specversion":"1.0","type":"com.redhat.console.notification.toCamel.splunk","source":"notifications","id":"9dc9a4b1-8868-4afc-a69d-e8723b20452c","time":"2022-02-02T14:09:55.532551Z","rh-account":"12345","data":"{\"notif-metadata\":{\"url\":\"http://localhost:8088\",\"secret_token\":\"TOKEN\",\"extras\":\"{}\"},\"account_id\":\"12345\",\"application\":\"advisor\",\"bundle\":\"rhel\",\"context\":{},\"event_type\":\"new-recommendation\",\"timestamp\":\"2022-02-02T14:09:55.344612\",\"events\":[{\"some\":\"eventdata\"}]}"}
+{"specversion":"1.0","type":"com.redhat.console.notification.toCamel.splunk","source":"notifications","id":"9dc9a4b1-8868-4afc-a69d-e8723b20452c","time":"2022-02-02T14:09:55.532551Z","rh-account":"12345","data":"{\"notif-metadata\":{\"url\":\"http://localhost:8088\",\"X-Insight-Token\":\"TOKEN\",\"extras\":\"{}\"},\"account_id\":\"12345\",\"application\":\"advisor\",\"bundle\":\"rhel\",\"context\":{},\"event_type\":\"new-recommendation\",\"timestamp\":\"2022-02-02T14:09:55.344612\",\"events\":[{\"some\":\"eventdata\"}]}"}
 ```
 (don't forget to replace `TOKEN` with your HEC token)
 
