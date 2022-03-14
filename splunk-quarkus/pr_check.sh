@@ -10,22 +10,15 @@ COMPONENT_NAME="eventing-splunk-quarkus"  # name of app-sre "resourceTemplate" i
 IMAGE="quay.io/cloudservices/eventing-integrations-splunk"
 DOCKERFILE="splunk-quarkus/Dockerfile.jvm"
 
-#IQE_PLUGINS="drift"
-#IQE_MARKER_EXPRESSION="smoke" # Need to check this
-#IQE_FILTER_EXPRESSION=""
-#IQE_CJI_TIMEOUT="30m"
+IQE_PLUGINS="eventing"
+IQE_MARKER_EXPRESSION="smoke" # Need to check this
+IQE_FILTER_EXPRESSION=""
+IQE_CJI_TIMEOUT="30m"
 
 
 # Install bonfire repo/initialize
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
-source "$CICD_ROOT/build.sh"
-source "$CICD_ROOT/deploy_ephemeral_env.sh"
-#source $CICD_ROOT/cji_smoke_test.sh
-
-# Need to make a dummy results file to make tests pass
-cat << EOF > "${APP_ROOT}/artifacts/junit-dummy.xml"
-<testsuite tests="1">
-    <testcase classname="dummy" name="dummytest"/>
-</testsuite>
-EOF
+source $CICD_ROOT/build.sh
+source $CICD_ROOT/deploy_ephemeral_env.sh
+source $CICD_ROOT/cji_smoke_test.sh
