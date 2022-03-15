@@ -73,7 +73,10 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     public void configure() throws Exception {
         configureErrorHandler();
         configureIngress();
+        configureReturn();
+        configureSuccessHandler();
         configureHandler();
+
     }
 
     private void configureErrorHandler() throws Exception {
@@ -90,7 +93,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .marshal().json()
             .log("Fail with for id ${header.ce-id} : ${exception.message}")
             .process(ceEncoder)
-            .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
+            .to(direct("return"));
     }
 
     private void configureIngress() throws Exception {
@@ -104,6 +107,19 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 .to(log("info"))
                 .to(direct("handler"))
             .end();
+    }
+
+    private void configureReturn() throws Exception {
+        from(direct("return"))
+            .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
+    }
+
+    private void configureSuccessHandler() throws Exception {
+        // If Event was sent successfully, send success reply to return kafka
+        from(direct("success"))
+            .setBody(simple("Event ${header.ce-id} sent successfully"))
+            .setHeader("outcome-success", constant("true"))
+            .to(direct("return"));
     }
 
     private void configureHandler() throws Exception {
@@ -145,6 +161,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                     .toD(https("$simple{headers.metadata[url].replaceFirst('^https://', '')}/services/collector/event")
                         .httpMethod("POST"))
             // Log after a successful send.
-            .log("Response ${body}");
+            .log("Response ${body}")
+            .to(direct("success"));
     }
 }
