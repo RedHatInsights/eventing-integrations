@@ -19,8 +19,8 @@ objects:
     - notifications-backend
     optionalDependencies:
     - drift
-    - advisor
-    - policies
+    - advisor-backend
+    - policies-engine
     kafkaTopics:
     - topicName: platform.notifications.ingress
       partitions: 3
