@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.Processor;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.builder.AggregationStrategies;
 
 /**
  * The main class that does the work setting up the Camel routes.
@@ -123,6 +124,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     }
 
     private void configureHandler() throws Exception {
+        Processor eventPicker = new EventPicker();
         // Receive messages on internal enpoint (within the same JVM)
         // named "splunk".
         from(direct("handler"))
@@ -145,8 +147,19 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             // for the http producer
             .marshal().json(JsonLibrary.Jackson)
 
+            .setProperty("eventsCount", jsonpath("$.events.length()"))
+
+            // loops over events in the original message
+            .loop(exchangeProperty("eventsCount")).copy()
+            // picks one Event from the original message
+            .process(eventPicker)
+
             // Transform message to add splunk wrapper to the json
             .transform().simple("{\"source\": \"eventing\", \"sourcetype\": \"Insights event\", \"event\": ${body}}")
+
+            // aggregate transformed messages and append them together
+            .aggregate(constant(true), AggregationStrategies.bean(EventAppender.class))
+            .completionSize(exchangeProperty("eventsCount"))
 
             // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
             // Send the message to Splunk's HEC as a splunk formattted event.
