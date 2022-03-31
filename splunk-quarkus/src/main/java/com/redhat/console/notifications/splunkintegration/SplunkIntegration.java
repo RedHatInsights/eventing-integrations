@@ -157,9 +157,12 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 .when(simple("${headers.metadata[url]} startsWith 'http://'"))
                     .toD(http("$simple{headers.metadata[url].replaceFirst('^http://', '')}/services/collector/event")
                         .httpMethod("POST"))
-                .otherwise()
+                    .endChoice()
+                .when(simple("${headers.metadata[url]} startsWith 'https://'"))
                     .toD(https("$simple{headers.metadata[url].replaceFirst('^https://', '')}/services/collector/event")
                         .httpMethod("POST"))
+                    .endChoice()
+            .end()
             // Log after a successful send.
             .log("Response ${body}")
             .to(direct("success"));
