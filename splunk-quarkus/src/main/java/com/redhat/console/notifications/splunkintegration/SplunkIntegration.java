@@ -92,7 +92,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .setHeader("outcome-fail", simple("true"))
             .process(resultTransformer)
             .marshal().json()
-            .log("Fail with for id ${header.ce-id} : ${exception.message}")
+            .log("Failed cloud event, id ${header.ce-id}, with exception : ${exception.message}")
             .process(ceEncoder)
             .to(direct("return"));
     }
