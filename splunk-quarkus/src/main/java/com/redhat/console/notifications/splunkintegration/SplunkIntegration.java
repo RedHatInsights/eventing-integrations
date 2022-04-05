@@ -158,7 +158,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .transform().simple("{\"source\": \"eventing\", \"sourcetype\": \"Insights event\", \"event\": ${body}}")
 
             // aggregate transformed messages and append them together
-            .aggregate(constant(true), new EventAppender())
+            // aggregate by "metadata" header as it contains data unique per target splunk instance
+            .aggregate(header("metadata"), new EventAppender())
             .completionSize(exchangeProperty("eventsCount"))
 
             // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
