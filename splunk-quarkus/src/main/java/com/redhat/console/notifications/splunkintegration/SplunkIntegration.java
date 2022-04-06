@@ -68,7 +68,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     @ConfigProperty(name = "kafka.return.group.id")
     String kafkaReturnGroupId;
     // The return type
-    public static final String RETURN_TYPE = "com.redhat.console.notifications.error";
+    public static final String RETURN_TYPE = "com.redhat.console.notifications.history";
 
     @Override
     public void configure() throws Exception {
