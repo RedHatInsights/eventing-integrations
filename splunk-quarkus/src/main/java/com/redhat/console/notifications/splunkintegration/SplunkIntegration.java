@@ -120,7 +120,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
-            .setBody(simple("Event ${header.ce-id} sent successfully"))
+            .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
             .setHeader("outcome-fail", simple("false"))
             .process(resultTransformer)
             .marshal().json()
