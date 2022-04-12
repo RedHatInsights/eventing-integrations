@@ -116,10 +116,15 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     }
 
     private void configureSuccessHandler() throws Exception {
+        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
+        Processor resultTransformer = new ResultTransformer();
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
             .setBody(simple("Event ${header.ce-id} sent successfully"))
-            .setHeader("outcome-success", constant("true"))
+            .setHeader("outcome-fail", simple("false"))
+            .process(resultTransformer)
+            .marshal().json()
+            .process(ceEncoder)
             .to(direct("return"));
     }
 
