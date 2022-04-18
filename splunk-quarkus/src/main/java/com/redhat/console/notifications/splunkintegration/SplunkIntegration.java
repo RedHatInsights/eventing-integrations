@@ -27,6 +27,7 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.Processor;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.builder.AggregationStrategies;
+import org.apache.camel.http.common.HttpOperationFailedException;
 
 /**
  * The main class that does the work setting up the Camel routes.
@@ -41,6 +42,7 @@ import org.apache.camel.builder.AggregationStrategies;
  */
 @RegisterForReflection(targets = {
     Exception.class,
+    HttpOperationFailedException.class,
     IOException.class
 })
 @ApplicationScoped
@@ -72,27 +74,50 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        configureErrorHandler();
+        configureHTTPErrorHandler();
         configureIngress();
+        configureIOErrorHandler();
         configureReturn();
         configureSuccessHandler();
         configureHandler();
 
     }
 
-    private void configureErrorHandler() throws Exception {
+    private void configureIOErrorHandler() throws Exception {
         Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
         Processor resultTransformer = new ResultTransformer();
         onException(IOException.class)
-            .to(direct("error"))
+            .to(direct("ioerror"))
             .handled(true);
-        // The error handler. We set the outcome to fail and then send to kafka
-        from(direct("error"))
+        // The IO error handler. We set the outcome to fail and then send to kafka
+        from(direct("ioerror"))
             .setBody(simple("${exception.message}"))
             .setHeader("outcome-fail", simple("true"))
             .process(resultTransformer)
             .marshal().json()
-            .log("Failed cloud event, id ${header.ce-id}, with exception : ${exception.message}")
+            .log("Failed cloud event, id ${header.ce-id}, with IO exception : ${exception.message}")
+            .process(ceEncoder)
+            .to(direct("return"));
+    }
+
+    private void configureHTTPErrorHandler() throws Exception {
+        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
+        Processor resultTransformer = new ResultTransformer();
+        onException(HttpOperationFailedException.class)
+            .to(direct("httperror"))
+            .handled(true);
+        // The HTTP error handler. We set the outcome to fail and then send to kafka
+        from(direct("httperror"))
+            .setBody(simple("${exception.message}"))
+            .setHeader("outcome-fail", simple("true"))
+            .process(resultTransformer)
+            .marshal().json()
+            .log("Failed cloud event, id ${header.ce-id}, with HTTP exception : ${exception.message}")
+            .log("Response Body: ${exception.getResponseBody()}")
+            .log("Response Headers: ${exception.getResponseHeaders()}")
+            .log("Status Code: ${exception.getStatusCode()}")
+            .log("Status Text: ${exception.getStatusText()}")
+            .log("Uri: ${exception.getUri()}")
             .process(ceEncoder)
             .to(direct("return"));
     }
