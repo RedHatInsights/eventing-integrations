@@ -74,9 +74,9 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        configureIOErrorHandler();
         configureHTTPErrorHandler();
         configureIngress();
-        configureIOErrorHandler();
         configureReturn();
         configureSuccessHandler();
         configureHandler();
