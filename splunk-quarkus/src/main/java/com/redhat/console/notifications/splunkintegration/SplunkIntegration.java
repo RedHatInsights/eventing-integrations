@@ -121,6 +121,9 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .log(LoggingLevel.ERROR, "Response Body: ${exception.getResponseBody()}")
             .log(LoggingLevel.ERROR, "Response Headers: ${exception.getResponseHeaders()}")
             .log(LoggingLevel.ERROR, "Status Code: ${exception.getStatusCode()}, Status Text: ${exception.getStatusText()}")
+            .log(LoggingLevel.ERROR, "Target URL: ${header.targetUrl}")
+            .log(LoggingLevel.ERROR, "Authorization: ${header.Authorization}")
+            .log(LoggingLevel.ERROR, "Time In: ${header.timeIn}")
             .process(ceEncoder)
             .to(direct("return"));
     }
