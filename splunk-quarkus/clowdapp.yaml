@@ -64,6 +64,8 @@ objects:
         env:
         - name: QUARKUS_HTTP_PORT
           value: "${QUARKUS_HTTP_PORT}"
+        - name: JAVA_OPTIONS
+          value: "${JAVA_OPTIONS}"
         - name: KAFKA_INGRESS_TOPIC
           value: "${KAFKA_INGRESS_TOPIC}"
         resources:
@@ -92,6 +94,11 @@ parameters:
   - name: QUARKUS_HTTP_PORT
     description: "Listen port of the Quarkus, defaulting to default Clowder private port"
     value: "9000"
+  - name: JAVA_OPTIONS
+    description: "Custom JAVA options, like runtime parameters"
+    value: >-
+      -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+      -Dquarkus.log.file.enable=false
   - name: KAFKA_INGRESS_TOPIC
     description: Kafka topic that the consumer takes messages from
     value: platform.notifications.tocamel

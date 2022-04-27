@@ -31,7 +31,7 @@ RUN microdnf install openssl curl ca-certificates ${JAVA_PACKAGE} \
 
 ENV KAFKA_INGRESS_TOPIC="platform.notifications.tocamel"
 
-ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager\
+ENV JAVA_OPTIONS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager\
  -Dquarkus.log.file.enable=false"
 
 # Use four distinct layers so if there are application changes the library layers can be re-used
@@ -43,6 +43,6 @@ COPY --from=build --chown=1001 /home/jboss/target/quarkus-app/quarkus/ /deployme
 EXPOSE 8080
 USER 1001
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTIONS \
+ENTRYPOINT ["sh", "-c", "java -Dquarkus.http.host=0.0.0.0 $JAVA_OPTIONS \
  -Dkafka.ingress.topic=$KAFKA_INGRESS_TOPIC\
  -jar /deployments/quarkus-run.jar "]
