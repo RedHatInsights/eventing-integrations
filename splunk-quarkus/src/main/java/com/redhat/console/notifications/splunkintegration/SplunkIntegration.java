@@ -109,6 +109,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .process(resultTransformer)
             .marshal().json()
             .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with IO exception : ${exception.message}")
+            .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
             .process(ceEncoder)
             .to(direct("return"));
     }
