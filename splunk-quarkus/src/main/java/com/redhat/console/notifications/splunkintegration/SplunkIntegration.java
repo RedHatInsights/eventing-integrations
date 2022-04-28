@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.Processor;
+import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.http.common.HttpOperationFailedException;
@@ -51,6 +52,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     // The name of our component. Must be unique
     public static final String COMPONENT_NAME = "splunk";
+    // Logger Name for logs using Log EIP
+    public static final String LOGGER_NAME = "com.redhat.console.integration." + COMPONENT_NAME;
 
     private static final Config CONFIG = ConfigProvider.getConfig();
     // Only accept/listen on these CloudEvent types
@@ -75,6 +78,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        getContext().getGlobalOptions().put(Exchange.LOG_EIP_NAME, LOGGER_NAME);
+
         configureErrorHandler();
         configureIngress();
         configureIoFailed();
