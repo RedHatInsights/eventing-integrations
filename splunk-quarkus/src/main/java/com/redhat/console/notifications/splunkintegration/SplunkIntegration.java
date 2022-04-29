@@ -22,6 +22,7 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.Processor;
@@ -29,6 +30,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.builder.AggregationStrategies;
 import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.LoggingLevel;
 
 /**
@@ -178,7 +180,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             //Add headers useful for error reporting and metrics
             .setHeader("targetUrl", simple("${headers.metadata[url]}"))
             .setHeader("timeIn", simpleF("%d", System.currentTimeMillis()))
-            
+
             //Set Authorization header
             .setHeader("Authorization", simpleF("Splunk %s", "${headers.metadata[X-Insight-Token]}"))
 
@@ -211,15 +213,31 @@ public class SplunkIntegration extends EndpointRouteBuilder {
             .choice()
                 .when(simple("${headers.metadata[url]} startsWith 'http://'"))
                     .to(http("dynamic")
-                        .httpMethod("POST"))
+                        .httpMethod("POST")
+                        .advanced()
+                        .httpClientConfigurer(getClientConfigurer()))
                     .endChoice()
                 .otherwise()
                     .to(https("dynamic")
-                        .httpMethod("POST"))
+                        .httpMethod("POST")
+                        .advanced()
+                        .httpClientConfigurer(getClientConfigurer()))
                     .endChoice()
             .end()
             // Log after a successful send.
             .log("Response ${body}")
             .to(direct("success"));
+    }
+
+    protected HttpClientConfigurer getClientConfigurer() {
+        return (clientBuilder) -> {
+            // proactively evict expired connections from the connection pool using a background thread
+            clientBuilder.evictExpiredConnections();
+
+            // proactively evict idle connections from the connection pool after 5s using a background thread.
+            // Arguments set maximum time persistent connections can stay idle while kept alive in the connection pool.
+            // Connections whose inactivity period exceeds this value will get closed and evicted from the pool.
+            clientBuilder.evictIdleConnections(5L, TimeUnit.SECONDS);
+        };
     }
 }
