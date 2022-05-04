@@ -8,8 +8,7 @@ import org.apache.camel.util.json.JsonArray;
 import org.apache.camel.util.json.Jsoner;
 
 /**
- * Transformer to pick an Event from the events
- * of the message.
+ * Transformer to pick an Event from the events of the message.
  */
 public class EventPicker implements Processor {
 

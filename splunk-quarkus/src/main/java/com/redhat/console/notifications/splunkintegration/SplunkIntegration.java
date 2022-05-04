@@ -34,10 +34,8 @@ import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.LoggingLevel;
 
 /**
- * The main class that does the work setting up the Camel routes.
- * Entry point for messages is below 'from(kafka(kafkaIngressTopic))'
- * Upon success/failure a message is returned to the kafkaReturnTopic
- * topic.
+ * The main class that does the work setting up the Camel routes. Entry point for messages is below
+ * 'from(kafka(kafkaIngressTopic))' Upon success/failure a message is returned to the kafkaReturnTopic topic.
  */
 
 /*
@@ -45,9 +43,9 @@ import org.apache.camel.LoggingLevel;
  * native compilation can work if desired.
  */
 @RegisterForReflection(targets = {
-    Exception.class,
-    HttpOperationFailedException.class,
-    IOException.class
+        Exception.class,
+        HttpOperationFailedException.class,
+        IOException.class
 })
 @ApplicationScoped
 public class SplunkIntegration extends EndpointRouteBuilder {
@@ -94,11 +92,11 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     private void configureErrorHandler() throws Exception {
         onException(IOException.class)
-            .to(direct("ioFailed"))
-            .handled(true);
+                .to(direct("ioFailed"))
+                .handled(true);
         onException(HttpOperationFailedException.class)
-            .to(direct("httpFailed"))
-            .handled(true);
+                .to(direct("httpFailed"))
+                .handled(true);
     }
 
     private void configureIoFailed() throws Exception {
@@ -106,14 +104,14 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // The error handler found an IO Exception. We set the outcome to fail and then send to kafka
         from(direct("ioFailed"))
-            .setBody(simple("${exception.message}"))
-            .setHeader("outcome-fail", simple("true"))
-            .process(resultTransformer)
-            .marshal().json()
-            .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with IO exception : ${exception.message}")
-            .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
-            .process(ceEncoder)
-            .to(direct("return"));
+                .setBody(simple("${exception.message}"))
+                .setHeader("outcome-fail", simple("true"))
+                .process(resultTransformer)
+                .marshal().json()
+                .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with IO exception : ${exception.message}")
+                .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
+                .process(ceEncoder)
+                .to(direct("return"));
     }
 
     private void configureHttpFailed() throws Exception {
@@ -121,34 +119,34 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // The error handler found an HTTP Exception. We set the outcome to fail and then send to kafka
         from(direct("httpFailed"))
-            .setBody(simple("${exception.message}"))
-            .setHeader("outcome-fail", simple("true"))
-            .process(resultTransformer)
-            .marshal().json()
-            .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with HTTP exception : ${exception.message}")
-            .log(LoggingLevel.ERROR, "Response Body: ${exception.getResponseBody()}")
-            .log(LoggingLevel.ERROR, "Response Headers: ${exception.getResponseHeaders()}")
-            .log(LoggingLevel.ERROR, "Status Code: ${exception.getStatusCode()}, Status Text: ${exception.getStatusText()}")
-            .process(ceEncoder)
-            .to(direct("return"));
+                .setBody(simple("${exception.message}"))
+                .setHeader("outcome-fail", simple("true"))
+                .process(resultTransformer)
+                .marshal().json()
+                .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with HTTP exception : ${exception.message}")
+                .log(LoggingLevel.ERROR, "Response Body: ${exception.getResponseBody()}")
+                .log(LoggingLevel.ERROR, "Response Headers: ${exception.getResponseHeaders()}")
+                .log(LoggingLevel.ERROR, "Status Code: ${exception.getStatusCode()}, Status Text: ${exception.getStatusText()}")
+                .process(ceEncoder)
+                .to(direct("return"));
     }
 
     private void configureIngress() throws Exception {
         from(kafka(kafkaIngressTopic).brokers(kafkaBrokers).groupId(kafkaIngressGroupId))
-            // Decode CloudEvent
-            .process(new CloudEventDecoder())
-            // We check that this is our type.
-            // Otherwise, we ignore the message there will be another component that takes care
-            .filter().simple("${header.ce-type} == '" + CE_TYPE + "'")
+                // Decode CloudEvent
+                .process(new CloudEventDecoder())
+                // We check that this is our type.
+                // Otherwise, we ignore the message there will be another component that takes care
+                .filter().simple("${header.ce-type} == '" + CE_TYPE + "'")
                 // Log the parsed cloudevent message.
                 .to(log("info"))
                 .to(direct("handler"))
-            .end();
+                .end();
     }
 
     private void configureReturn() throws Exception {
         from(direct("return"))
-            .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
+                .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
     }
 
     private void configureSuccessHandler() throws Exception {
@@ -156,12 +154,12 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
-            .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
-            .setHeader("outcome-fail", simple("false"))
-            .process(resultTransformer)
-            .marshal().json()
-            .process(ceEncoder)
-            .to(direct("return"));
+                .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
+                .setHeader("outcome-fail", simple("false"))
+                .process(resultTransformer)
+                .marshal().json()
+                .process(ceEncoder)
+                .to(direct("return"));
     }
 
     private void configureHandler() throws Exception {
@@ -169,64 +167,64 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // Receive messages on internal enpoint (within the same JVM)
         // named "splunk".
         from(direct("handler"))
-            // Remove headers of previous message,
-            // specifically the ones that HTTP components use
-            // to prevent passing the REST path to the HTTP producer.
-            // Without this it would use path: /services/collector/raw/event
-            // where the "/event" is the REST endpoint configured on previous
-            // component.
-            .removeHeaders("CamelHttp*")
+                // Remove headers of previous message,
+                // specifically the ones that HTTP components use
+                // to prevent passing the REST path to the HTTP producer.
+                // Without this it would use path: /services/collector/raw/event
+                // where the "/event" is the REST endpoint configured on previous
+                // component.
+                .removeHeaders("CamelHttp*")
 
-            //Add headers useful for error reporting and metrics
-            .setHeader("targetUrl", simple("${headers.metadata[url]}"))
-            .setHeader("timeIn", simpleF("%d", System.currentTimeMillis()))
+                //Add headers useful for error reporting and metrics
+                .setHeader("targetUrl", simple("${headers.metadata[url]}"))
+                .setHeader("timeIn", simpleF("%d", System.currentTimeMillis()))
 
-            //Set Authorization header
-            .setHeader("Authorization", simpleF("Splunk %s", "${headers.metadata[X-Insight-Token]}"))
+                //Set Authorization header
+                .setHeader("Authorization", simpleF("Splunk %s", "${headers.metadata[X-Insight-Token]}"))
 
-            // body is a JsonObject so converting to consumable object
-            // for the http producer
-            .marshal().json(JsonLibrary.Jackson)
+                // body is a JsonObject so converting to consumable object
+                // for the http producer
+                .marshal().json(JsonLibrary.Jackson)
 
-            .setProperty("eventsCount", jsonpath("$.events.length()"))
+                .setProperty("eventsCount", jsonpath("$.events.length()"))
 
-            // loops over events in the original message
-            .loop(exchangeProperty("eventsCount")).copy()
-            // picks one Event from the original message
-            .process(eventPicker)
+                // loops over events in the original message
+                .loop(exchangeProperty("eventsCount")).copy()
+                // picks one Event from the original message
+                .process(eventPicker)
 
-            // Transform message to add splunk wrapper to the json
-            .transform().simple("{\"source\": \"eventing\", \"sourcetype\": \"Insights event\", \"event\": ${body}}")
+                // Transform message to add splunk wrapper to the json
+                .transform().simple("{\"source\": \"eventing\", \"sourcetype\": \"Insights event\", \"event\": ${body}}")
 
-            // aggregate transformed messages and append them together
-            // aggregate by "metadata" header as it contains data unique per target splunk instance
-            .aggregate(header("metadata"), new EventAppender())
-            .completionSize(exchangeProperty("eventsCount"))
+                // aggregate transformed messages and append them together
+                // aggregate by "metadata" header as it contains data unique per target splunk instance
+                .aggregate(header("metadata"), new EventAppender())
+                .completionSize(exchangeProperty("eventsCount"))
 
-            // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
-            // Send the message to Splunk's HEC as a splunk formattted event.
-            // It sends token via Basic Preemptive Authentication.
-            // POST method is being used, set up explicitly
-            // (see https://camel.apache.org/components/latest/http-component.html#_which_http_method_will_be_used).
-            .setHeader(Exchange.HTTP_URI, simple("$simple{headers.metadata[url]}"))
-            .setHeader(Exchange.HTTP_PATH, constant("/services/collector/event"))
-            .choice()
+                // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
+                // Send the message to Splunk's HEC as a splunk formattted event.
+                // It sends token via Basic Preemptive Authentication.
+                // POST method is being used, set up explicitly
+                // (see https://camel.apache.org/components/latest/http-component.html#_which_http_method_will_be_used).
+                .setHeader(Exchange.HTTP_URI, simple("$simple{headers.metadata[url]}"))
+                .setHeader(Exchange.HTTP_PATH, constant("/services/collector/event"))
+                .choice()
                 .when(simple("${headers.metadata[url]} startsWith 'http://'"))
-                    .to(http("dynamic")
+                .to(http("dynamic")
                         .httpMethod("POST")
                         .advanced()
                         .httpClientConfigurer(getClientConfigurer()))
-                    .endChoice()
+                .endChoice()
                 .otherwise()
-                    .to(https("dynamic")
+                .to(https("dynamic")
                         .httpMethod("POST")
                         .advanced()
                         .httpClientConfigurer(getClientConfigurer()))
-                    .endChoice()
-            .end()
-            // Log after a successful send.
-            .log("Response ${body}")
-            .to(direct("success"));
+                .endChoice()
+                .end()
+                // Log after a successful send.
+                .log("Response ${body}")
+                .to(direct("success"));
     }
 
     protected HttpClientConfigurer getClientConfigurer() {
