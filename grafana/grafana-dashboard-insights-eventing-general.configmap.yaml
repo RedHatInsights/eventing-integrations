@@ -25,8 +25,8 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 359,
-      "iteration": 1651851817285,
+      "id": 360,
+      "iteration": 1652083417568,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -241,15 +241,15 @@ data:
                   },
                   {
                     "color": "orange",
-                    "value": 50
+                    "value": 0.5
                   },
                   {
                     "color": "yellow",
-                    "value": 80
+                    "value": 0.8
                   },
                   {
                     "color": "green",
-                    "value": 90
+                    "value": 0.9
                   }
                 ]
               },
@@ -1571,7 +1571,7 @@ data:
       "timezone": "",
       "title": "Eventing Integrations",
       "uid": "eventing",
-      "version": 2
+      "version": 3
     }
 metadata:
   name: grafana-dashboard-insights-eventing-general
