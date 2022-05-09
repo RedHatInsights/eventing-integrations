@@ -29,7 +29,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.Exchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.builder.AggregationStrategies;
-import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.LoggingLevel;
 
