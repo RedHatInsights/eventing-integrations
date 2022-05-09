@@ -1,11 +1,11 @@
 package com.redhat.console.notifications.splunkintegration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Transformer to create a Map from the outcome of the actual component.

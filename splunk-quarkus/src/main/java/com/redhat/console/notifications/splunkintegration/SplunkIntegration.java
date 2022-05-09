@@ -16,22 +16,22 @@
  */
 package com.redhat.console.notifications.splunkintegration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
-import org.apache.camel.Processor;
+import javax.enterprise.context.ApplicationScoped;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.camel.Exchange;
-import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.builder.AggregationStrategies;
-import org.apache.camel.http.base.HttpOperationFailedException;
-import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
+import org.apache.camel.component.http.HttpClientConfigurer;
+import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.model.dataformat.JsonLibrary;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * The main class that does the work setting up the Camel routes. Entry point for messages is below
