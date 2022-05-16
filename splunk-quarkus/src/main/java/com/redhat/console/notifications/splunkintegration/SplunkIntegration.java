@@ -92,9 +92,15 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     private void configureErrorHandler() throws Exception {
         onException(IOException.class)
+                .maximumRedilveries(3)
+                .useExponentialBackOff(true)
+                .useCollisionAvoidance(true)
                 .to(direct("ioFailed"))
                 .handled(true);
         onException(HttpOperationFailedException.class)
+                .maximumRedilveries(3)
+                .useExponentialBackOff(true)
+                .useCollisionAvoidance(true)
                 .to(direct("httpFailed"))
                 .handled(true);
     }
