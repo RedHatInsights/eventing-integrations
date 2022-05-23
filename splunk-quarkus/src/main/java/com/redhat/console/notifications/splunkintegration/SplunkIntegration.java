@@ -104,6 +104,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // The error handler found an IO Exception. We set the outcome to fail and then send to kafka
         from(direct("ioFailed"))
+                .routeId("ioFailed")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
                 .process(resultTransformer)
@@ -119,6 +120,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // The error handler found an HTTP Exception. We set the outcome to fail and then send to kafka
         from(direct("httpFailed"))
+                .routeId("httpFailed")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
                 .process(resultTransformer)
@@ -133,6 +135,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     private void configureIngress() throws Exception {
         from(kafka(kafkaIngressTopic).brokers(kafkaBrokers).groupId(kafkaIngressGroupId))
+                .routeId("ingress")
                 // Decode CloudEvent
                 .process(new CloudEventDecoder())
                 // We check that this is our type.
@@ -146,6 +149,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     private void configureReturn() throws Exception {
         from(direct("return"))
+                .routeId("return")
                 .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
     }
 
@@ -154,6 +158,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
+                .routeId("success")
                 .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
                 .setHeader("outcome-fail", simple("false"))
                 .process(resultTransformer)
@@ -167,6 +172,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // Receive messages on internal enpoint (within the same JVM)
         // named "splunk".
         from(direct("handler"))
+                .routeId("handler")
                 // Remove headers of previous message,
                 // specifically the ones that HTTP components use
                 // to prevent passing the REST path to the HTTP producer.
