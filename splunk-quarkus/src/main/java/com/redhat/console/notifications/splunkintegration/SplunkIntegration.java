@@ -17,6 +17,7 @@
 package com.redhat.console.notifications.splunkintegration;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,6 +29,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpHeaderFilterStrategy;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -75,6 +77,18 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     String kafkaReturnGroupId;
     // The return type
     public static final String RETURN_TYPE = "com.redhat.console.notifications.history";
+
+    class SplunkHttpHeaderStrategy extends HttpHeaderFilterStrategy {
+        @Override
+        protected void initialize() {
+            setLowerCase(true);
+            setFilterOnMatch​(false); // reverse filtering to only accept selected
+
+            getInFilter().clear();
+            getOutFilter().clear();
+            getOutFilter().add("authorization");
+        }
+    }
 
     @Override
     public void configure() throws Exception {
@@ -218,12 +232,14 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 .when(simple("${headers.metadata[url]} startsWith 'http://'"))
                 .to(http("dynamic")
                         .httpMethod("POST")
+                        .headerFilterStrategy(new SplunkHttpHeaderStrategy())
                         .advanced()
                         .httpClientConfigurer(getClientConfigurer()))
                 .endChoice()
                 .otherwise()
                 .to(https("dynamic")
                         .httpMethod("POST")
+                        .headerFilterStrategy(new SplunkHttpHeaderStrategy())
                         .advanced()
                         .httpClientConfigurer(getClientConfigurer()))
                 .endChoice()
