@@ -17,7 +17,7 @@ Ensure that the HEC has SSL disabled and that all tokens are enabled.
 
 ```
 $ cd splunk-quarkus
-$ podman build -f Dockerfile.jvm -t quay.io/vkrizan/eventing-splunk-quarkus ..
+$ podman build -f Dockerfile.jvm -t quay.io/cloudservices/eventing-integrations-splunk ..
 ```
 
 ### Running
@@ -25,7 +25,7 @@ $ podman build -f Dockerfile.jvm -t quay.io/vkrizan/eventing-splunk-quarkus ..
 Running within container:
 
 ```
-podman run -it -e ACG_CONFIG=/cdapp/devel.json -v devel.json:/cdapp/devel.json quay.io/vkrizan/eventing-splunk-quarkus
+podman run -it -e ACG_CONFIG=/cdapp/devel.json -v devel.json:/cdapp/devel.json quay.io/cloudservices/eventing-integrations-splunk
 ```
 
 You might ommit the interative terminal options `-it` if you want to have
