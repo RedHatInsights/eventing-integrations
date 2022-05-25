@@ -105,12 +105,13 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler found an IO Exception. We set the outcome to fail and then send to kafka
         from(direct("ioFailed"))
                 .routeId("ioFailed")
+                .log(LoggingLevel.ERROR, "IOFailure for event ${header.ce-id} (account ${header.accountId})"
+                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
                 .process(resultTransformer)
                 .marshal().json()
-                .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with IO exception : ${exception.message}")
-                .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
                 .process(ceEncoder)
                 .to(direct("return"));
     }
@@ -121,14 +122,15 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler found an HTTP Exception. We set the outcome to fail and then send to kafka
         from(direct("httpFailed"))
                 .routeId("httpFailed")
+                .log(LoggingLevel.ERROR, "HTTPFailure for event ${header.ce-id} (account ${header.accountId})"
+                                         + " to ${header.targetUrl}: ${exception.getStatusCode()}"
+                                         + " ${exception.getStatusText()}: ${exception.message}")
+                .log(LoggingLevel.DEBUG, "Response Body: ${exception.getResponseBody()}")
+                .log(LoggingLevel.DEBUG, "Response Headers: ${exception.getResponseHeaders()}")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
                 .process(resultTransformer)
                 .marshal().json()
-                .log(LoggingLevel.ERROR, "Failed cloud event, id ${header.ce-id}, with HTTP exception : ${exception.message}")
-                .log(LoggingLevel.ERROR, "Response Body: ${exception.getResponseBody()}")
-                .log(LoggingLevel.ERROR, "Response Headers: ${exception.getResponseHeaders()}")
-                .log(LoggingLevel.ERROR, "Status Code: ${exception.getStatusCode()}, Status Text: ${exception.getStatusText()}")
                 .process(ceEncoder)
                 .to(direct("return"));
     }
@@ -142,7 +144,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 // Otherwise, we ignore the message there will be another component that takes care
                 .filter().simple("${header.ce-type} == '" + CE_TYPE + "'")
                 // Log the parsed cloudevent message.
-                .to(log("info"))
+                .to(log("com.redhat.console.notifications.splunkintegration?level=DEBUG"))
                 .to(direct("handler"))
                 .end();
     }
@@ -159,6 +161,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
                 .routeId("success")
+                .log("Delivered event ${header.ce-id} (account ${header.accountId}) to ${header.targetUrl}")
                 .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
                 .setHeader("outcome-fail", simple("false"))
                 .process(resultTransformer)
@@ -228,8 +231,6 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                         .httpClientConfigurer(getClientConfigurer()))
                 .endChoice()
                 .end()
-                // Log after a successful send.
-                .log("Response ${body}")
                 .to(direct("success"));
     }
 
