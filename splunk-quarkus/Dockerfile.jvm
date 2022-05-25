@@ -10,7 +10,7 @@ COPY ./.mvn /home/jboss/.mvn
 COPY ./eclipse-formatter-config.xml /home/jboss/
 COPY ./splunk-quarkus /home/jboss
 WORKDIR /home/jboss
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw --no-transfer-progress clean package -DskipTests
 
 # Build the container
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
