@@ -135,6 +135,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-test-junit5</artifactId>
+          <version>3.17.0</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
