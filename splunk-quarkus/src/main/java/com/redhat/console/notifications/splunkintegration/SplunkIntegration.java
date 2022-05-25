@@ -95,13 +95,21 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         getContext().getGlobalOptions().put(Exchange.LOG_EIP_NAME, LOGGER_NAME);
 
         configureErrorHandler();
+        configureTargetUrlInvalidHandler();
         configureIngress();
         configureIoFailed();
         configureHttpFailed();
+        configureTargetUrlValidationFailed();
         configureReturn();
         configureSuccessHandler();
         configureHandler();
 
+    }
+
+    private void configureTargetUrlInvalidHandler() throws Exception {
+        onException(IllegalArgumentException.class)
+                .to(direct("targetUrlValidationFailed"))
+                .handled(true);
     }
 
     private void configureErrorHandler() throws Exception {
@@ -111,6 +119,20 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         onException(HttpOperationFailedException.class)
                 .to(direct("httpFailed"))
                 .handled(true);
+    }
+
+    private void configureTargetUrlValidationFailed() throws Exception {
+        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
+        Processor resultTransformer = new ResultTransformer();
+        // The error handler when we receive a TargetUrlValidator failure
+        from(direct("targetUrlValidationFailed"))
+                .setBody(simple("Invalid URL used"))
+                .setHeader("outcome-fail", simple("true"))
+                .process(resultTransformer)
+                .marshal().json()
+                .log(LoggingLevel.ERROR, "Invalid URL used, id ${header.ce-id}")
+                .process(ceEncoder)
+                .to(direct("return"));
     }
 
     private void configureIoFailed() throws Exception {
@@ -223,6 +245,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 // aggregate by "metadata" header as it contains data unique per target splunk instance
                 .aggregate(header("metadata"), new EventAppender())
                 .completionSize(exchangeProperty("eventsCount"))
+                .process(new TargetUrlValidator()) // validate the TargetUrl to be a proper url
 
                 // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
                 // Send the message to Splunk's HEC as a splunk formattted event.
