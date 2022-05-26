@@ -9,7 +9,7 @@ public class TargetUrlValidator implements Processor {
 
     public void process(Exchange exchange) throws Exception {
         String[] schemes = { "http", "https" };
-        UrlValidator urlValidator = new UrlValidator(schemes);
+        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
 
         Message in = exchange.getIn();
         String url = in.getHeader("targetUrl", String.class);

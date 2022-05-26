@@ -29,6 +29,24 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
     }
 
     @Test
+    // we support protocol with port
+    public void testValidTargetUrlWithPort() {
+        Exchange exchange = createExchange();
+        String url = "https://example.com:8000/foo?bar=baz";
+        exchange.getIn().setHeader("targetUrl", url);
+        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+    }
+
+    @Test
+    // we support localhost
+    public void testValidTargetUrlLocalhost() {
+        Exchange exchange = createExchange();
+        String url = "https://localhost/";
+        exchange.getIn().setHeader("targetUrl", url);
+        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+    }
+
+    @Test
     // we don't support ftp protocol
     public void testValidTargetUrlFtp() {
         Exchange exchange = createExchange();
