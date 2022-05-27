@@ -55,6 +55,39 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
     }
 
     @Test
+    // we support localhost with port
+    public void testValidTargetUrlLocalhostWithPort() {
+        Exchange exchange = createExchange();
+        String url = "https://localhost:1234/";
+        exchange.getIn().setHeader("targetUrl", url);
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
+    }
+
+    @Test
+    // we support IP address
+    public void testValidTargetUrlIP() {
+        Exchange exchange = createExchange();
+        String url = "https://123.123.123.123/";
+        exchange.getIn().setHeader("targetUrl", url);
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
+    }
+
+    @Test
+    // we support IP address with port
+    public void testValidTargetUrlIPWithPort() {
+        Exchange exchange = createExchange();
+        String url = "https://123.123.123.123:1234/";
+        exchange.getIn().setHeader("targetUrl", url);
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
+    }
+
+    @Test
     // we don't support ftp protocol
     public void testValidTargetUrlFtp() {
         Exchange exchange = createExchange();
