@@ -95,7 +95,6 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         getContext().getGlobalOptions().put(Exchange.LOG_EIP_NAME, LOGGER_NAME);
 
         configureErrorHandler();
-        configureTargetUrlInvalidHandler();
         configureIngress();
         configureIoFailed();
         configureHttpFailed();
@@ -106,18 +105,15 @@ public class SplunkIntegration extends EndpointRouteBuilder {
 
     }
 
-    private void configureTargetUrlInvalidHandler() throws Exception {
-        onException(IllegalArgumentException.class)
-                .to(direct("targetUrlValidationFailed"))
-                .handled(true);
-    }
-
     private void configureErrorHandler() throws Exception {
         onException(IOException.class)
                 .to(direct("ioFailed"))
                 .handled(true);
         onException(HttpOperationFailedException.class)
                 .to(direct("httpFailed"))
+                .handled(true);
+        onException(IllegalArgumentException.class)
+                .to(direct("targetUrlValidationFailed"))
                 .handled(true);
     }
 
