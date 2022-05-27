@@ -229,10 +229,10 @@ public class SplunkIntegration extends EndpointRouteBuilder {
                 // It sends token via Basic Preemptive Authentication.
                 // POST method is being used, set up explicitly
                 // (see https://camel.apache.org/components/latest/http-component.html#_which_http_method_will_be_used).
-                .setHeader(Exchange.HTTP_URI, simple("$simple{headers.metadata[url]}"))
+                .setHeader(Exchange.HTTP_URI, header("targetUrl"))
                 .setHeader(Exchange.HTTP_PATH, constant("/services/collector/event"))
                 .choice()
-                .when(simple("${headers.metadata[url]} startsWith 'http://'"))
+                .when(simple("${header.targetUrl} startsWith 'http://'"))
                 .to(http("dynamic")
                         .httpMethod("POST")
                         .headerFilterStrategy(new SplunkHttpHeaderStrategy())
