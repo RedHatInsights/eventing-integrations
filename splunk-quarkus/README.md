@@ -67,3 +67,33 @@ Within platform this can be achieved for example using the Drift service:
   (updating a package)
 * running a system check-in from the system
 
+### Running unit tests
+
+With local dev mode
+
+```
+$ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dquarkus.kafka.devservices.enabled=false
+```
+
+running tests are paused.
+
+You can hit `o` to toggle test output and `r` key to resume testing and again `r` to re-run tests.
+
+
+
+Alternatively you can run tests via
+
+
+```
+$ ACG_CONFIG=./devel.json ../mvnw quarkus:test -Dquarkus.kafka.devservices.enabled=false
+```
+
+and use `r` to re-run tests.
+
+
+
+It is also possible to run tests one-time
+
+```
+$ ACG_CONFIG=./devel.json ../mvnw test -Dquarkus.kafka.devservices.enabled=false
+```
