@@ -126,11 +126,14 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         Processor resultTransformer = new ResultTransformer();
         // The error handler when we receive a TargetUrlValidator failure
         from(direct("targetUrlValidationFailed"))
-                .setBody(simple("Invalid URL used"))
+                .routeId("targetUrlValidationFailed")
+                .log(LoggingLevel.ERROR, "IllegalArgumentException for event ${header.ce-id} (account ${header.accountId})"
+                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
+                .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
                 .process(resultTransformer)
                 .marshal().json()
-                .log(LoggingLevel.ERROR, "Invalid URL used, id ${header.ce-id}")
                 .process(ceEncoder)
                 .to(direct("return"));
     }
