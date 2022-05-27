@@ -1,14 +1,14 @@
 package com.redhat.console.notifications.splunkintegration;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.test.junit5.ExchangeTestSupport;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TargetUrlValidatorTest extends ExchangeTestSupport {
-    private final TargetUrlValidator targetUrlValidator = new TargetUrlValidator(); 
+    private final TargetUrlValidator targetUrlValidator = new TargetUrlValidator();
 
     @Test
     // we support http protocol
@@ -16,7 +16,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "http://example.com/foo?bar=baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -25,7 +27,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "https://example.com/foo?bar=baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -34,7 +38,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "https://example.com:8000/foo?bar=baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -43,7 +49,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "https://localhost/";
         exchange.getIn().setHeader("targetUrl", url);
-        assertDoesNotThrow(() -> { targetUrlValidator.process(exchange); } );
+        assertDoesNotThrow(() -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -52,7 +60,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "ftp://example.com/foo?bar=baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertThrows(IllegalArgumentException.class, () -> { targetUrlValidator.process(exchange); } );
+        assertThrows(IllegalArgumentException.class, () -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -61,7 +71,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "foo-bar_baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertThrows(IllegalArgumentException.class, () -> { targetUrlValidator.process(exchange); } );
+        assertThrows(IllegalArgumentException.class, () -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -70,7 +82,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = "";
         exchange.getIn().setHeader("targetUrl", url);
-        assertThrows(IllegalArgumentException.class, () -> { targetUrlValidator.process(exchange); } );
+        assertThrows(IllegalArgumentException.class, () -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
     @Test
@@ -79,9 +93,9 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
         Exchange exchange = createExchange();
         String url = null;
         exchange.getIn().setHeader("targetUrl", url);
-        assertThrows(IllegalArgumentException.class, () -> { targetUrlValidator.process(exchange); } );
+        assertThrows(IllegalArgumentException.class, () -> {
+            targetUrlValidator.process(exchange);
+        });
     }
 
 }
-
-
