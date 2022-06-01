@@ -34,6 +34,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.support.jsse.SSLContextParameters;
 import org.apache.camel.support.jsse.TrustManagersParameters;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.ProtocolException;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -102,6 +103,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         configureIoFailed();
         configureHttpFailed();
         configureTargetUrlValidationFailed();
+        configureSecureConnectionFailed();
         configureReturn();
         configureSuccessHandler();
         configureHandler();
@@ -118,6 +120,26 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         onException(IllegalArgumentException.class)
                 .to(direct("targetUrlValidationFailed"))
                 .handled(true);
+        onException(ProtocolException.class)
+                .to(direct("secureConnectionFailed"))
+                .handled(true);
+    }
+
+    private void configureSecureConnectionFailed() throws Exception {
+        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
+        Processor resultTransformer = new ResultTransformer();
+        // The error handler when we receive an HTTP (unsecure) connection instead of HTTPS
+        from(direct("secureConnectionFailed"))
+                .routeId("secureConnectionFailed")
+                .log(LoggingLevel.ERROR, "ProtocolException for event ${header.ce-id} (account ${header.accountId})"
+                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
+                .setBody(simple("${exception.message}"))
+                .setHeader("outcome-fail", simple("true"))
+                .process(resultTransformer)
+                .marshal().json()
+                .process(ceEncoder)
+                .to(direct("return"));
     }
 
     private void configureTargetUrlValidationFailed() throws Exception {

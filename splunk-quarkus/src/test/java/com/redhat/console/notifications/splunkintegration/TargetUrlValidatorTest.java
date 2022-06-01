@@ -2,6 +2,7 @@ package com.redhat.console.notifications.splunkintegration;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.test.junit5.ExchangeTestSupport;
+import org.apache.http.ProtocolException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -11,12 +12,12 @@ public class TargetUrlValidatorTest extends ExchangeTestSupport {
     private final TargetUrlValidator targetUrlValidator = new TargetUrlValidator();
 
     @Test
-    // we support http protocol
+    // we don't support http protocol
     public void testValidTargetUrlHttp() {
         Exchange exchange = createExchange();
         String url = "http://example.com/foo?bar=baz";
         exchange.getIn().setHeader("targetUrl", url);
-        assertDoesNotThrow(() -> {
+        assertThrows(ProtocolException.class, () -> {
             targetUrlValidator.process(exchange);
         });
     }
