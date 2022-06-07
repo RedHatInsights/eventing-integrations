@@ -113,7 +113,12 @@
         <dependency>
             <groupId>com.redhat.cloud.common</groupId>
             <artifactId>clowder-quarkus-config-source</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.logging.cloudwatch</groupId>
+            <artifactId>quarkus-logging-cloudwatch</artifactId>
+            <version>4.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>

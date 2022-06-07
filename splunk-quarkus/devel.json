@@ -16,5 +16,9 @@
                 "consumerGroup": "Eventing"
             }
         ]
+    },
+    "logging": {
+        "cloudwatch": {},
+        "type": "none"
     }
 }
