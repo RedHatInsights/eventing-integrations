@@ -19,6 +19,6 @@
     },
     "logging": {
         "cloudwatch": {},
-        "type": "none"
+        "type": "null"
     }
 }
