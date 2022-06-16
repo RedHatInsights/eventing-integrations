@@ -64,6 +64,8 @@ objects:
         env:
         - name: QUARKUS_HTTP_PORT
           value: "${QUARKUS_HTTP_PORT}"
+        - name: QUARKUS_LOG_CLOUDWATCH_LOG_STREAM_NAME
+          value: ${HOSTNAME}
         - name: JAVA_OPTIONS
           value: "${JAVA_OPTIONS}"
         - name: KAFKA_INGRESS_TOPIC
