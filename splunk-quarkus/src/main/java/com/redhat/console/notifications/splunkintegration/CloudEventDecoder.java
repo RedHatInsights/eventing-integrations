@@ -31,6 +31,7 @@ public class CloudEventDecoder implements Processor {
         JsonObject extras = (JsonObject) Jsoner.deserialize(metaData.getString("extras"));
         in.setHeader("extras", extras);
         in.setHeader("accountId", bodyObject.get("account_id"));
+        in.setHeader("orgId", bodyObject.get("org_id"));
 
         bodyObject.remove("notif-metadata");
 
