@@ -131,8 +131,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler when we receive an HTTP (unsecure) connection instead of HTTPS
         from(direct("secureConnectionFailed"))
                 .routeId("secureConnectionFailed")
-                .log(LoggingLevel.ERROR, "ProtocolException for event ${header.ce-id} (account ${header.accountId})"
-                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.ERROR, "ProtocolException for event ${header.ce-id} (orgId ${header.orgId}"
+                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
@@ -148,8 +148,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler when we receive a TargetUrlValidator failure
         from(direct("targetUrlValidationFailed"))
                 .routeId("targetUrlValidationFailed")
-                .log(LoggingLevel.ERROR, "IllegalArgumentException for event ${header.ce-id} (account ${header.accountId})"
-                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.ERROR, "IllegalArgumentException for event ${header.ce-id} (orgId ${header.orgId}"
+                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
@@ -165,8 +165,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler found an IO Exception. We set the outcome to fail and then send to kafka
         from(direct("ioFailed"))
                 .routeId("ioFailed")
-                .log(LoggingLevel.ERROR, "IOFailure for event ${header.ce-id} (account ${header.accountId})"
-                                         + " to ${header.targetUrl}: ${exception.message}")
+                .log(LoggingLevel.ERROR, "IOFailure for event ${header.ce-id} (orgId ${header.orgId}"
+                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
                 .setBody(simple("${exception.message}"))
                 .setHeader("outcome-fail", simple("true"))
@@ -182,8 +182,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // The error handler found an HTTP Exception. We set the outcome to fail and then send to kafka
         from(direct("httpFailed"))
                 .routeId("httpFailed")
-                .log(LoggingLevel.ERROR, "HTTPFailure for event ${header.ce-id} (account ${header.accountId})"
-                                         + " to ${header.targetUrl}: ${exception.getStatusCode()}"
+                .log(LoggingLevel.ERROR, "HTTPFailure for event ${header.ce-id} (orgId ${header.orgId} account"
+                                         + " ${header.accountId}) to ${header.targetUrl}: ${exception.getStatusCode()}"
                                          + " ${exception.getStatusText()}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "Response Body: ${exception.getResponseBody()}")
                 .log(LoggingLevel.DEBUG, "Response Headers: ${exception.getResponseHeaders()}")
@@ -221,7 +221,8 @@ public class SplunkIntegration extends EndpointRouteBuilder {
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
                 .routeId("success")
-                .log("Delivered event ${header.ce-id} (account ${header.accountId}) to ${header.targetUrl}")
+                .log("Delivered event ${header.ce-id} (orgId ${header.orgId} account ${header.accountId})"
+                     + " to ${header.targetUrl}")
                 .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
                 .setHeader("outcome-fail", simple("false"))
                 .process(resultTransformer)
