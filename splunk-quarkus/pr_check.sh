@@ -10,6 +10,9 @@ COMPONENT_NAME="eventing-splunk-quarkus"  # name of app-sre "resourceTemplate" i
 IMAGE="quay.io/cloudservices/eventing-integrations-splunk"
 DOCKERFILE="splunk-quarkus/Dockerfile.jvm"
 
+# Enviroment to take bonfire/clowdapp reources from
+export REF_ENV="insights-stage"
+
 IQE_PLUGINS="eventing"
 IQE_MARKER_EXPRESSION="smoke" # Need to check this
 IQE_FILTER_EXPRESSION=""
