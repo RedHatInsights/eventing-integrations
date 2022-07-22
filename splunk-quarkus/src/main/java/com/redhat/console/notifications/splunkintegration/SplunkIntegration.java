@@ -196,7 +196,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     }
 
     private void configureIngress() throws Exception {
-        from(kafka(kafkaIngressTopic).brokers(kafkaBrokers).groupId(kafkaIngressGroupId))
+        from(kafka(kafkaIngressTopic).groupId(kafkaIngressGroupId))
                 .routeId("ingress")
                 // Decode CloudEvent
                 .process(new CloudEventDecoder())
@@ -212,7 +212,7 @@ public class SplunkIntegration extends EndpointRouteBuilder {
     private void configureReturn() throws Exception {
         from(direct("return"))
                 .routeId("return")
-                .to(kafka(kafkaReturnTopic).brokers(kafkaBrokers));
+                .to(kafka(kafkaReturnTopic));
     }
 
     private void configureSuccessHandler() throws Exception {
