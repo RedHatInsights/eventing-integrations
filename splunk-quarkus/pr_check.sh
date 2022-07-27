@@ -6,7 +6,7 @@
 # Options that must be configured by app owner
 # --------------------------------------------
 APP_NAME="eventing"  # name of app-sre "application" folder this component lives in
-COMPONENT_NAME="eventing-splunk-quarkus"  # name of app-sre "resourceTemplate" in deploy.yaml for this component
+COMPONENT_NAME="eventing-integrations"  # name of app-sre "resourceTemplate" in deploy.yaml for this component
 IMAGE="quay.io/cloudservices/eventing-integrations-splunk"
 DOCKERFILE="splunk-quarkus/Dockerfile.jvm"
 
