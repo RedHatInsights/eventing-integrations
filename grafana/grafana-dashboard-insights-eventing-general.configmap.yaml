@@ -7,7 +7,10 @@ data:
         "list": [
           {
             "builtIn": 1,
-            "datasource": "-- Grafana --",
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
             "enable": true,
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
@@ -25,13 +28,17 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 360,
-      "iteration": 1652083417568,
+      "id": 359,
+      "iteration": 1660738500952,
       "links": [],
       "liveNow": false,
       "panels": [
         {
           "collapsed": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tuHy3WB7z"
+          },
           "gridPos": {
             "h": 1,
             "w": 24,
@@ -40,8 +47,88 @@ data:
           },
           "id": 20,
           "panels": [],
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "tuHy3WB7z"
+              },
+              "refId": "A"
+            }
+          ],
           "title": "Current values",
           "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.9
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 0.95
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.98
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 0,
+            "y": 1
+          },
+          "id": 43,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.0.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum(increase(CamelExchangeEventNotifier_seconds_count{namespace=~\"eventing-.+\",endpointName=\"direct://return\",eventType=\"ExchangeSentEvent\"}[$__range]))/sum(increase(CamelExchangeEventNotifier_seconds_count{namespace=~\"eventing-.+\",endpointName=\"direct://handler\",eventType=\"ExchangeSentEvent\"}[$__range]))",
+              "refId": "A"
+            }
+          ],
+          "title": "Handling Success (SLO)",
+          "type": "stat"
         },
         {
           "datasource": {
@@ -88,7 +175,7 @@ data:
           "gridPos": {
             "h": 3,
             "w": 3,
-            "x": 0,
+            "x": 3,
             "y": 1
           },
           "id": 34,
@@ -107,7 +194,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -172,7 +259,7 @@ data:
           "gridPos": {
             "h": 3,
             "w": 3,
-            "x": 3,
+            "x": 6,
             "y": 1
           },
           "id": 37,
@@ -191,7 +278,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -208,7 +295,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "Successful Events",
+          "title": "Events Delivered",
           "type": "stat"
         },
         {
@@ -259,8 +346,8 @@ data:
           },
           "gridPos": {
             "h": 3,
-            "w": 3,
-            "x": 6,
+            "w": 2,
+            "x": 9,
             "y": 1
           },
           "id": 41,
@@ -279,7 +366,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -296,7 +383,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "Success Rate",
+          "title": "Delivery",
           "type": "stat"
         },
         {
@@ -343,8 +430,8 @@ data:
           },
           "gridPos": {
             "h": 3,
-            "w": 3,
-            "x": 9,
+            "w": 2,
+            "x": 11,
             "y": 1
           },
           "id": 39,
@@ -363,7 +450,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -427,8 +514,8 @@ data:
           },
           "gridPos": {
             "h": 3,
-            "w": 3,
-            "x": 12,
+            "w": 2,
+            "x": 13,
             "y": 1
           },
           "id": 38,
@@ -447,7 +534,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -507,8 +594,8 @@ data:
           },
           "gridPos": {
             "h": 3,
-            "w": 3,
-            "x": 15,
+            "w": 2,
+            "x": 17,
             "y": 1
           },
           "id": 40,
@@ -527,7 +614,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -591,8 +678,8 @@ data:
           },
           "gridPos": {
             "h": 3,
-            "w": 3,
-            "x": 18,
+            "w": 2,
+            "x": 19,
             "y": 1
           },
           "id": 9,
@@ -611,7 +698,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -695,7 +782,7 @@ data:
             "text": {},
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.1",
+          "pluginVersion": "9.0.3",
           "targets": [
             {
               "datasource": {
@@ -717,6 +804,10 @@ data:
         },
         {
           "collapsed": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tuHy3WB7z"
+          },
           "gridPos": {
             "h": 1,
             "w": 24,
@@ -725,6 +816,15 @@ data:
           },
           "id": 18,
           "panels": [],
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "tuHy3WB7z"
+              },
+              "refId": "A"
+            }
+          ],
           "title": "Golden signals",
           "type": "row"
         },
@@ -1035,6 +1135,119 @@ data:
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 11
+          },
+          "id": 45,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "hidden",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum(CamelExchangeEventNotifier_seconds_count{namespace=~\"eventing-.+\",endpointName=\"direct://return\",eventType=\"ExchangeSentEvent\"})/sum(CamelExchangeEventNotifier_seconds_count{namespace=~\"eventing-.+\",endpointName=\"direct://handler\",eventType=\"ExchangeSentEvent\"})",
+              "refId": "A"
+            }
+          ],
+          "title": "Handling Success (SLO)",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "tuHy3WB7z"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 31,
+          "panels": [],
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "tuHy3WB7z"
+              },
+              "refId": "A"
+            }
+          ],
+          "title": "Advanced",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
                 "hideFrom": {
@@ -1082,7 +1295,7 @@ data:
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 11
+            "y": 19
           },
           "id": 5,
           "links": [],
@@ -1192,7 +1405,7 @@ data:
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 11
+            "y": 19
           },
           "id": 4,
           "links": [],
@@ -1237,19 +1450,6 @@ data:
           ],
           "title": "Average/Max memory consumed",
           "type": "timeseries"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 17
-          },
-          "id": 31,
-          "panels": [],
-          "title": "Advanced",
-          "type": "row"
         },
         {
           "datasource": {
@@ -1310,10 +1510,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
+            "h": 8,
             "w": 12,
             "x": 0,
-            "y": 18
+            "y": 25
           },
           "id": 29,
           "links": [],
@@ -1407,7 +1607,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 18
+            "y": 25
           },
           "id": 36,
           "options": {
@@ -1440,7 +1640,7 @@ data:
         }
       ],
       "refresh": false,
-      "schemaVersion": 35,
+      "schemaVersion": 36,
       "style": "dark",
       "tags": [],
       "templating": {
@@ -1450,7 +1650,7 @@ data:
             "auto_count": 30,
             "auto_min": "10s",
             "current": {
-              "selected": true,
+              "selected": false,
               "text": "10m",
               "value": "10m"
             },
@@ -1540,7 +1740,7 @@ data:
         ]
       },
       "time": {
-        "from": "now-6h",
+        "from": "now-24h",
         "to": "now"
       },
       "timepicker": {
@@ -1571,7 +1771,7 @@ data:
       "timezone": "",
       "title": "Eventing Integrations",
       "uid": "eventing",
-      "version": 3
+      "version": 4
     }
 metadata:
   name: grafana-dashboard-insights-eventing-general
