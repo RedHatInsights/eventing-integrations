@@ -58,7 +58,6 @@ public class MainRoutes extends IntegrationsRouteBuilder {
                 // We check that this is our type.
                 // Otherwise, we ignore the message there will be another component that takes
                 // care
-                .log("${header.ce-type} == '" + CE_TYPE + "'")
                 .filter().simple("${header.ce-type} == '" + CE_TYPE + "'")
                 // Log the parsed cloudevent message.
                 .to(log("com.redhat.console.integrations?level=DEBUG"))
