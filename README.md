@@ -3,6 +3,9 @@
 ConsoleDot events integrations with 3rd-party tools (such as Splunk)
 build together with [Notifications](https://github.com/RedHatInsights/notifications-backend/).
 
+Currently supported integrations:
+* Splunk
+
 ## Development
 
 ### Prerequisites
@@ -25,6 +28,20 @@ $ podman build -f Dockerfile.jvm -t quay.io/cloudservices/eventing-integrations-
 
 ### Running
 
+Note: All integrations are connecting to Kafka defined within `ACG_CONFIG` listenting on `platform.notifications.tocamel` topic.
+
+Switching between integrations is done through two application properties:
+* `camel.main.javaRoutesIncludePattern` -- selects Camel routes
+  * always include `**/MainRoutes*,**/ErrorHandlingRoutes*`
+  * and then append concrete integration selector (e.g. `,**/Splunk*`)
+* `integrations.component.name` -- selects messages out of Kafka for this type
+  * ingress route selects messages of Cloud Event type
+    `com.redhat.console.notification.toCamel.<integrations.component.name>`
+
+For specific property configuration per integration type see below.
+
+#### Running Splunk Integration
+
 Running within container:
 
 ```
@@ -39,11 +56,8 @@ To run it locally with dev mode execute:
 
 ```
 $ cd splunk-quarkus
-$ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dquarkus.kafka.devservices.enabled=false
+$ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dcamel.main.javaRoutesIncludePattern="**/MainRoutes*,**/ErrorHandlingRoutes*,**/Splunk*" -Dintegrations.component.name=splunk -Dquarkus.kafka.devservices.enabled=false
 ```
-
-The integration would connect to Kafka defined within `ACG_CONFIG`
-listenting on `platform.notifications.tocamel`.
 
 ### Trying it out
 
