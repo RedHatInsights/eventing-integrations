@@ -5,6 +5,7 @@ build together with [Notifications](https://github.com/RedHatInsights/notificati
 
 Currently supported integrations:
 * Splunk
+* ServiceNow
 
 ## Development
 
@@ -59,6 +60,16 @@ $ cd splunk-quarkus
 $ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dcamel.main.javaRoutesIncludePattern="**/MainRoutes*,**/ErrorHandlingRoutes*,**/Splunk*" -Dintegrations.component.name=splunk -Dquarkus.kafka.devservices.enabled=false
 ```
 
+#### Running Service Now Integration
+
+
+To run Service Now integration locally with dev mode execute:
+
+```
+$ cd splunk-quarkus
+$ ACG_CONFIG=./devel.json ../mvnw quarkus:dev -Dcamel.main.javaRoutesIncludePattern="**/MainRoutes*,**/ErrorHandlingRoutes*,**/ServiceNow*" -Dintegrations.component.name=servicenow -Dquarkus.kafka.devservices.enabled=false
+```
+
 ### Trying it out
 
 Generate a message on `platform.notifications.tocamel` Kafka topic.
@@ -70,11 +81,18 @@ tool from Kafka:
 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic platform.notifications.tocamel
 ```
 
-Here is an example CloudEvent for testing:
+Here are CloudEvent examples for testing:
+
+Splunk event
 ```
 {"specversion":"1.0","type":"com.redhat.console.notification.toCamel.splunk","source":"notifications","id":"9dc9a4b1-8868-4afc-a69d-e8723b20452c","time":"2022-02-02T14:09:55.532551Z","rh-account":"12345","data":"{\"notif-metadata\":{\"url\":\"http://localhost:8088\",\"X-Insight-Token\":\"TOKEN\",\"extras\":\"{}\"},\"account_id\":\"12345\",\"org_id\":\"67890\",\"application\":\"advisor\",\"bundle\":\"rhel\",\"context\":{},\"event_type\":\"new-recommendation\",\"timestamp\":\"2022-02-02T14:09:55.344612\",\"events\":[{\"some\":\"eventdata\"}]}"}
 ```
-(don't forget to replace `TOKEN` with your HEC token)
+
+ServiceNow event
+```
+{"specversion":"1.0","type":"com.redhat.console.notification.toCamel.servicenow","source":"notifications","id":"9dc9a4b1-8868-4afc-a69d-e8723b20452c","time":"2022-02-02T14:09:55.532551Z","rh-account":"12345","data":"{\"notif-metadata\":{\"url\":\"http://localhost:8088\",\"X-Insight-Token\":\"TOKEN\",\"extras\":\"{}\"},\"account_id\":\"12345\",\"org_id\":\"67890\",\"application\":\"advisor\",\"bundle\":\"rhel\",\"context\":{},\"event_type\":\"new-recommendation\",\"timestamp\":\"2022-02-02T14:09:55.344612\",\"events\":[{\"some\":\"eventdata\"}]}"}
+```
+(don't forget to replace `TOKEN` with your token or password)
 
 Within platform this can be achieved for example using the Drift service:
 * registering a system
