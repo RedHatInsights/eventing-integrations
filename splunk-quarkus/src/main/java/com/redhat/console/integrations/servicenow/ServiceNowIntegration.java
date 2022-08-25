@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.redhat.console.integrations.BasicAuthenticationProcessor;
 import com.redhat.console.integrations.IntegrationsRouteBuilder;
 import com.redhat.console.integrations.TargetUrlValidator;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -30,12 +31,14 @@ import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.http.common.HttpHeaderFilterStrategy;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.http.ProtocolException;
+import org.apache.http.auth.AuthenticationException;
 
 @RegisterForReflection(targets = {
         Exception.class,
         HttpOperationFailedException.class,
         IOException.class,
-        ProtocolException.class
+        ProtocolException.class,
+        AuthenticationException.class
 })
 @ApplicationScoped
 public class ServiceNowIntegration extends IntegrationsRouteBuilder {
@@ -72,6 +75,10 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
 
                 // validate the TargetUrl to be a proper url
                 .process(new TargetUrlValidator())
+
+                // Set Basic Auth to Authorization header with rh_insights_integration user
+                // and password from X-Insight-Token metadata.
+                .process(new BasicAuthenticationProcessor("rh_insights_integration"))
 
                 .setHeader(Exchange.HTTP_URI, header("targetUrl"))
                 .to(https("dynamic")
