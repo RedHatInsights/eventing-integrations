@@ -4,7 +4,7 @@
 
 set -exv
 
-IMAGE_NAME="quay.io/cloudservices/eventing-integrations-splunk"
+IMAGE_NAME="quay.io/cloudservices/eventing-integrations"
 IMAGE_TAG=$(git rev-parse --short=7 HEAD)
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
