@@ -29,9 +29,10 @@ RUN microdnf install openssl curl ca-certificates ${JAVA_PACKAGE} \
     && chown 1001:root /deployments \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
-ENV KAFKA_INGRESS_TOPIC="platform.notifications.tocamel"
-
-ENV JAVA_OPTIONS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager\
+ENV KAFKA_INGRESS_TOPIC="platform.notifications.tocamel" \
+    INTEGRATION_HANDLER_PATTERN="Splunk*" \
+    INTEGRATION_COMPONENT_NAME="splunk" \
+    JAVA_OPTIONS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager\
  -Dquarkus.log.file.enable=false"
 
 # Use four distinct layers so if there are application changes the library layers can be re-used
@@ -45,4 +46,6 @@ USER 1001
 
 ENTRYPOINT ["sh", "-c", "java -Dquarkus.http.host=0.0.0.0 $JAVA_OPTIONS \
  -Dkafka.ingress.topic=$KAFKA_INGRESS_TOPIC\
+ -Dcamel.main.javaRoutesIncludePattern=\"**/MainRoutes*,**/ErrorHandlingRoutes*,**/$INTEGRATION_HANDLER_PATTERN\"\
+ -Dintegrations.component.name=$INTEGRATION_COMPONENT_NAME\
  -jar /deployments/quarkus-run.jar "]
