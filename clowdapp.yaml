@@ -1,0 +1,113 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: eventing-integrations
+objects:
+- apiVersion: cloud.redhat.com/v1alpha1
+  kind: ClowdApp
+  metadata:
+    name: eventing-integrations
+    labels:
+      app: eventing-integrations
+      clowdapp: eventing-integrations
+  spec:
+    envName: ${ENV_NAME}
+    testing:
+      iqePlugin: eventing
+    dependencies:
+    - notifications-backend
+    optionalDependencies:
+    - drift
+    - advisor-backend
+    - policies-engine
+    kafkaTopics:
+    - topicName: platform.notifications.ingress
+      partitions: 3
+      replicas: 3
+    - topicName: platform.notifications.tocamel
+      partitions: 3
+      replicas: 3
+    - topicName: platform.notifications.fromcamel
+      partitions: 3
+      replicas: 3
+    deployments:
+    - name: servicenow
+      minReplicas: ${{MIN_REPLICAS}}
+      webServices:
+        private:
+          enable: true
+      deploymentStrategy:
+        privateStrategy: RollingUpdate
+      podSpec:
+        image: ${IMAGE}:${IMAGE_TAG}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /q/health/live
+            port: ${{QUARKUS_HTTP_PORT}}
+            scheme: HTTP
+          initialDelaySeconds: 40
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /q/health/ready
+            port: ${{QUARKUS_HTTP_PORT}}
+            scheme: HTTP
+          initialDelaySeconds: 40
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: "${QUARKUS_HTTP_PORT}"
+        - name: QUARKUS_LOG_CLOUDWATCH_LOG_STREAM_NAME
+          value: ${HOSTNAME}
+        - name: JAVA_OPTIONS
+          value: "${JAVA_OPTIONS}"
+        - name: KAFKA_INGRESS_TOPIC
+          value: "${KAFKA_INGRESS_TOPIC}"
+        - name: INTEGRATION_HANDLER_PATTERN
+          value: "ServiceNow*"
+        - name: INTEGRATION_COMPONENT_NAME
+          value: "servicenow"
+        resources:
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
+          requests:
+            cpu: ${CPU_REQUEST}
+            memory: ${MEMORY_REQUEST}
+
+parameters:
+  - name: IMAGE
+    value: quay.io/cloudservices/eventing-integrations
+  - name: IMAGE_TAG
+    value: latest
+  - name: ENV_NAME
+    required: true
+  - name: CPU_LIMIT
+    value: 500m
+  - name: MEMORY_LIMIT
+    value: 512Mi
+  - name: CPU_REQUEST
+    value: 100m
+  - name: MEMORY_REQUEST
+    value: 256Mi
+  - name: QUARKUS_HTTP_PORT
+    description: "Listen port of the Quarkus, defaulting to default Clowder private port"
+    value: "9000"
+  - name: JAVA_OPTIONS
+    description: "Custom JAVA options, like runtime parameters"
+    value: >-
+      -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+      -Dquarkus.log.file.enable=false
+  - name: KAFKA_INGRESS_TOPIC
+    description: Kafka topic that the consumer takes messages from
+    value: platform.notifications.tocamel
+  - name: MIN_REPLICAS
+    description: Minimum number of replicas
+    value: "3"
