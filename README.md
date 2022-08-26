@@ -133,7 +133,7 @@ $ ACG_CONFIG=./devel.json ../mvnw test -Dquarkus.kafka.devservices.enabled=false
 
 ## Development Notes
 
-## Updating Java Dependencies
+### Updating Java Dependencies
 
 The best way how to update Java/Quarkus dependencies is to update Quarkus platform version.
 The platform version is mapped to a set of dependent packages of Camel provided by a BOM (Bill of Materials)
@@ -144,7 +144,7 @@ See also
 * [Camel Dependency Management](https://camel.apache.org/camel-quarkus/latest/user-guide/dependency-management.html) for Quarkus
 * [Quarkus Platform Guide](https://quarkus.io/guides/platform)
 
-### Process
+#### Process
 
 1. Check version of [quarkus.platform.version](/splunk-quarkus/pom.xml) project property whether it matches
    the newest possible version as per [quarkus-camel-bom][quarkus-camel-bom].
