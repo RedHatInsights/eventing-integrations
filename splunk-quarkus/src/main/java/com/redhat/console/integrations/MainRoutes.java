@@ -21,7 +21,7 @@ public class MainRoutes extends IntegrationsRouteBuilder {
     String kafkaBrokers;
 
     // Event incoming Kafka topic
-    @ConfigProperty(name = "kafka.ingress.topic")
+    @ConfigProperty(name = "mp.messaging.kafka.ingress.topic")
     String kafkaIngressTopic;
 
     // Event incoming kafka group id
@@ -29,7 +29,7 @@ public class MainRoutes extends IntegrationsRouteBuilder {
     String kafkaIngressGroupId;
 
     // Event return Kafka topic
-    @ConfigProperty(name = "kafka.return.topic")
+    @ConfigProperty(name = "mp.messaging.kafka.return.topic")
     String kafkaReturnTopic;
 
     // Event return kafka group id
