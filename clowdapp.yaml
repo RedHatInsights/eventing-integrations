@@ -22,9 +22,6 @@ objects:
     - advisor-backend
     - policies-engine
     kafkaTopics:
-    - topicName: platform.notifications.ingress
-      partitions: 3
-      replicas: 3
     - topicName: platform.notifications.tocamel
       partitions: 3
       replicas: 3
@@ -68,8 +65,6 @@ objects:
           value: ${HOSTNAME}
         - name: JAVA_OPTIONS
           value: "${JAVA_OPTIONS}"
-        - name: KAFKA_INGRESS_TOPIC
-          value: "${KAFKA_INGRESS_TOPIC}"
         - name: INTEGRATION_HANDLER_PATTERN
           value: "ServiceNow*"
         - name: INTEGRATION_COMPONENT_NAME
@@ -105,9 +100,6 @@ parameters:
     value: >-
       -Djava.util.logging.manager=org.jboss.logmanager.LogManager
       -Dquarkus.log.file.enable=false
-  - name: KAFKA_INGRESS_TOPIC
-    description: Kafka topic that the consumer takes messages from
-    value: platform.notifications.tocamel
   - name: MIN_REPLICAS
     description: Minimum number of replicas
     value: "3"
