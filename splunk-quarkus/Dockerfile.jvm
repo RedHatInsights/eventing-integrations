@@ -16,11 +16,12 @@ RUN ./mvnw --no-transfer-progress clean package -DskipTests
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
+ENV deps="openssl curl ca-certificates ${JAVA_PACKAGE}"
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
 # Install java
 # Also set up permissions for user `1001`
-RUN microdnf install openssl curl ca-certificates ${JAVA_PACKAGE} \
+RUN microdnf install $deps \
     && microdnf update \
     && microdnf clean all \
     && mkdir /deployments \
