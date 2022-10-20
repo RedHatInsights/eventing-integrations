@@ -19,7 +19,7 @@ if test -f /etc/redhat-release && grep -q -i "release 7" /etc/redhat-release; th
     mkdir -p "$DOCKER_CONF"
     docker --config="$DOCKER_CONF" login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
     #docker --config="$DOCKER_CONF" login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
-    docker --config="$DOCKER_CONF" build -f ./splunk-quarkus/Dockerfile.jvm -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+    docker --config="$DOCKER_CONF" build --pull --no-cache -f ./splunk-quarkus/Dockerfile.jvm -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     docker --config="$DOCKER_CONF" push "${IMAGE_NAME}:${IMAGE_TAG}"
     docker --config="$DOCKER_CONF" tag "${IMAGE_NAME}:${IMAGE_TAG}" "${OLD_IMAGE_NAME}:${IMAGE_TAG}"
     docker --config="$DOCKER_CONF" push "${OLD_IMAGE_NAME}:${IMAGE_TAG}"
@@ -36,7 +36,7 @@ else
     export REGISTRY_AUTH_FILE="$AUTH_CONF_DIR/auth.json"
     podman login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
     #podman login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
-    podman build -f ./splunk-quarkus/Dockerfile.jvm -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+    podman build --pull --no-cache -f ./splunk-quarkus/Dockerfile.jvm -t "${IMAGE_NAME}:${IMAGE_TAG}" .
     podman push "${IMAGE_NAME}:${IMAGE_TAG}"
     podman tag "${IMAGE_NAME}:${IMAGE_TAG}" "${OLD_IMAGE_NAME}:${IMAGE_TAG}"
     podman push "${OLD_IMAGE_NAME}:${IMAGE_TAG}"
