@@ -80,7 +80,7 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
         Processor eventPicker = new EventPicker();
         // Receive messages on internal enpoint (within the same JVM)
         // named "splunk".
-        from(direct("handler"))
+        from(seda("handler"))
                 .routeId("handler")
                 // Remove headers of previous message,
                 // specifically the ones that HTTP components use

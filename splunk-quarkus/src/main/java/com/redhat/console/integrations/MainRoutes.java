@@ -61,7 +61,7 @@ public class MainRoutes extends IntegrationsRouteBuilder {
                 .filter().simple("${header.ce-type} == '" + CE_TYPE + "'")
                 // Log the parsed cloudevent message.
                 .to(log("com.redhat.console.integrations?level=DEBUG"))
-                .to(direct("handler"))
+                .to(seda("handler"))
                 .end();
     }
 

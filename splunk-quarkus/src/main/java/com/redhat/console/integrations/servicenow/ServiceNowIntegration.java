@@ -62,7 +62,7 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
     }
 
     private void configureHandler() throws Exception {
-        from(direct("handler"))
+        from(seda("handler"))
                 .routeId("handler")
 
                 //Add headers useful for error reporting and metrics
