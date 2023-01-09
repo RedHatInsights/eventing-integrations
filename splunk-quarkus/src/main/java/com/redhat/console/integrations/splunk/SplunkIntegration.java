@@ -114,6 +114,8 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
                 // aggregate transformed messages and append them together
                 // aggregate by "metadata" header as it contains data unique per target splunk instance
                 .aggregate(header("metadata"), new EventAppender())
+                // use default of 10 threads to process aggregated records (that act as queue)
+                .parallelProcessing(true)
                 .completionSize(exchangeProperty("eventsCount"))
                 .process(new TargetUrlValidator()) // validate the TargetUrl to be a proper url
 
