@@ -59,6 +59,7 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
     public void configure() throws Exception {
         super.configure();
         configureHandler();
+        configurePush();
     }
 
     private void configureHandler() throws Exception {
@@ -81,13 +82,17 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
                 .process(new BasicAuthenticationProcessor("rh_insights_integration"))
 
                 .setHeader(Exchange.HTTP_URI, header("targetUrl"))
-                .to(https("dynamic")
-                        .httpMethod("POST")
-                        .headerFilterStrategy(new ServiceNowHttpHeaderStrategy())
-                        .advanced()
-                        .httpClientConfigurer(getClientConfigurer()))
+                .to(seda("push"));
+    }
 
-                .to(direct("success"));
+    private void configurePush() throws Exception {
+        from(seda("push").concurrentConsumers(10))
+            .to(https("dynamic")
+                .httpMethod("POST")
+                .headerFilterStrategy(new ServiceNowHttpHeaderStrategy())
+                .advanced()
+                .httpClientConfigurer(getClientConfigurer()))
+            .to(direct("success"));
     }
 
     protected HttpClientConfigurer getClientConfigurer() {
