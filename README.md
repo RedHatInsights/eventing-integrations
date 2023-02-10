@@ -140,6 +140,9 @@ The platform version is mapped to a set of dependent packages of Camel provided 
 package [`io.quarkus.platform:quarkus-camel-bom`][quarkus-camel-bom]
 (available from [quarkusio/quarkus-platform](https://github.com/quarkusio/quarkus-platform)).
 
+**CAUTION**: Quarkus platform version needs to be set up to 2.11, as later versions use camel-quarkus
+that breaks use of `camel.main.javaRoutesIncludePattern` for integration switching.
+
 See also
 * [Camel Dependency Management](https://camel.apache.org/camel-quarkus/latest/user-guide/dependency-management.html) for Quarkus
 * [Quarkus Platform Guide](https://quarkus.io/guides/platform)
