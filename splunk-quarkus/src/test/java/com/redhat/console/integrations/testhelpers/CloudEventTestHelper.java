@@ -100,11 +100,7 @@ public class CloudEventTestHelper {
         cloudEvent.put(FIELD_TIME, TEST_ACTION_TIMESTAMP);
         cloudEvent.put(FIELD_RH_ORG_ID, TEST_ACTION_ORG_ID);
         cloudEvent.put(FIELD_RH_ACCOUNT, TEST_ACTION_ACCOUNT_ID);
-        // The "data" key must go as a string, because due to a bug the
-        // notifications service sends is as such, instead of as a JSON object,
-        // which is what the cloud event schema specification suggests. More
-        // information in https://issues.redhat.com/browse/RHCLOUD-24986.
-        cloudEvent.put(FIELD_DATA, data.toString());
+        cloudEvent.put(FIELD_DATA, data);
 
         return cloudEvent;
     }

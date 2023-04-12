@@ -1,5 +1,6 @@
 package com.redhat.console.integrations;
 
+import java.util.List;
 import java.util.Map;
 
 import com.redhat.console.integrations.testhelpers.CloudEventTestHelper;
@@ -16,22 +17,45 @@ import org.junit.jupiter.api.Test;
 public class CloudEventDecoderTest extends CamelQuarkusTestSupport {
 
     /**
-     * Tests that the event decoder correctly processes the Cloud Event and that doesn't modify any of the incoming
-     * data, even though it breaks it into a different structure for Camel.
-     * 
+     * Tests that the event decoder correctly processes the Cloud Event and
+     * that doesn't modify any of the incoming data, even though it breaks it
+     * into a different structure for Camel. It also tests that a cloud event
+     * which has the "data" field as a string instead of a JSON object is
+     * parsed without any issues. For more information check the comment in
+     * {@link CloudEventDecoder#process(Exchange)}.
+     *
      * @throws Exception if any unexpected error occurs.
      */
     @Test
     void testProcess() throws Exception {
         final JsonObject cloudEvent = CloudEventTestHelper.buildTestCloudEvent();
 
-        final Exchange exchange = createExchangeWithBody(cloudEvent.toString());
+        final JsonObject cloudEventDataAsString = CloudEventTestHelper.buildTestCloudEvent();
+        // Extract the "data" key and store it again as a string.
+        final JsonObject data = cloudEventDataAsString.getJsonObject(CloudEventTestHelper.FIELD_DATA);
+        cloudEventDataAsString.put(CloudEventTestHelper.FIELD_DATA, data.toString());
 
-        final CloudEventDecoder cloudEventDecoder = new CloudEventDecoder();
+        final List<JsonObject> cloudEvents = List.of(cloudEvent, cloudEventDataAsString);
 
-        // Call the decoder under test.
-        cloudEventDecoder.process(exchange);
+        for (final JsonObject ce : cloudEvents) {
+            final Exchange exchange = createExchangeWithBody(ce.encode());
 
+            final CloudEventDecoder cloudEventDecoder = new CloudEventDecoder();
+
+            // Call the decoder under test.
+            cloudEventDecoder.process(exchange);
+
+            this.assertExchangeIsCorrect(exchange);
+        }
+    }
+
+    /**
+     * Asserts that the provided exchange contains all the information that came in the incoming message, and that the
+     * transformations it performs are correct.
+     *
+     * @param exchange the exchange to assert.
+     */
+    void assertExchangeIsCorrect(final Exchange exchange) {
         // Get the message to test that it was correctly built.
         final Message message = exchange.getIn();
 
