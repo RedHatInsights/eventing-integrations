@@ -17,12 +17,10 @@ import org.junit.jupiter.api.Test;
 public class CloudEventDecoderTest extends CamelQuarkusTestSupport {
 
     /**
-     * Tests that the event decoder correctly processes the Cloud Event and
-     * that doesn't modify any of the incoming data, even though it breaks it
-     * into a different structure for Camel. It also tests that a cloud event
-     * which has the "data" field as a string instead of a JSON object is
-     * parsed without any issues. For more information check the comment in
-     * {@link CloudEventDecoder#process(Exchange)}.
+     * Tests that the event decoder correctly processes the Cloud Event and that doesn't modify any of the incoming
+     * data, even though it breaks it into a different structure for Camel. It also tests that a cloud event which has
+     * the "data" field as a string instead of a JSON object is parsed without any issues. For more information check
+     * the comment in {@link CloudEventDecoder#process(Exchange)}.
      *
      * @throws Exception if any unexpected error occurs.
      */
@@ -144,39 +142,7 @@ public class CloudEventDecoderTest extends CamelQuarkusTestSupport {
                 "the 'X-Insight-Token' field on the 'notif-metadata' object has an unexpected value");
 
         final org.apache.camel.util.json.JsonObject body = message.getBody(org.apache.camel.util.json.JsonObject.class);
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_VERSION, body.getString("version"),
-                "the 'version' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ID_VALUE.toString(), body.getString("id"),
-                "the 'id' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_BUNDLE, body.getString("bundle"),
-                "the 'bundle' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_APPLICATION, body.getString("application"),
-                "the 'application' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_EVENT_TYPE, body.getString("event_type"),
-                "the 'event_type' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_TIMESTAMP.toString(), body.getString("timestamp"),
-                "the 'timestamp' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ORG_ID, body.getString("org_id"),
-                "the 'org_id' field of the action has an unexpected value");
 
-        final org.apache.camel.util.json.JsonObject context = (org.apache.camel.util.json.JsonObject) body.get("context");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_CONTEXT_INTEGRATION_UUID_VALUE.toString(),
-                context.getString("integration-uuid"),
-                "the 'integration-uuid' field of the action's context has an unexpected value");
-
-        final org.apache.camel.util.json.JsonArray events = body.getCollection("events");
-        Assertions.assertEquals(1, events.size(), "unexpected number of events found in the action");
-
-        final org.apache.camel.util.json.JsonObject event = (org.apache.camel.util.json.JsonObject) events.get(0);
-        final org.apache.camel.util.json.JsonObject eventMetadata
-                = (org.apache.camel.util.json.JsonObject) event.get("metadata");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_METADATA_VALUE,
-                eventMetadata.getString(CloudEventTestHelper.TEST_ACTION_METADATA_KEY),
-                "the 'metadata' field of the action's event has an unexpected value");
-
-        final org.apache.camel.util.json.JsonObject eventPayload = (org.apache.camel.util.json.JsonObject) event.get("payload");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_PAYLOAD_VALUE,
-                eventPayload.getString(CloudEventTestHelper.TEST_ACTION_PAYLOAD_KEY),
-                "the 'payload' field of the action's event has an unexpected value");
+        CloudEventTestHelper.assertEventIsTheExpectedOne(new JsonObject(body.toJson()));
     }
 }
