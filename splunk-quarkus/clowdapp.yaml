@@ -81,11 +81,11 @@ parameters:
   - name: ENV_NAME
     required: true
   - name: CPU_LIMIT
-    value: 100m
+    value: 500m
   - name: MEMORY_LIMIT
     value: 512Mi
   - name: CPU_REQUEST
-    value: 10m
+    value: 100m
   - name: MEMORY_REQUEST
     value: 256Mi
   - name: QUARKUS_HTTP_PORT
