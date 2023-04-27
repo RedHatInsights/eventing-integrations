@@ -1,3 +1,9 @@
+# Ignore generated Quarkus file logs.
+quarkus.log*
+
+# Ignore IntelliJ's IML files.
+*.iml
+
 .DS_Store/
 .vagrant/
 redhat-insights-*.*.*.tar.gz
