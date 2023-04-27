@@ -52,7 +52,7 @@ public class ServiceNowIntegrationTest extends CamelQuarkusTestSupport {
         final CloudEventDecoder cloudEventDecoder = new CloudEventDecoder();
 
         // Call the decoder to mimic what the exchange will look like when the
-        // SplunkIntegration route receives the payload.
+        // ServiceNowIntegration route receives the payload.
         cloudEventDecoder.process(exchange);
 
         final MockEndpoint sedaEndpoint = getMockEndpoint("mock:seda:push");
