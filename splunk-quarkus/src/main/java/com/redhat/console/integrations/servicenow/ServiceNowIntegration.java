@@ -47,7 +47,7 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
         @Override
         protected void initialize() {
             setLowerCase(true);
-            setFilterOnMatch​(false); // reverse filtering to only accept selected
+            setFilterOnMatch(false); // reverse filtering to only accept selected
 
             getInFilter().clear();
             getOutFilter().clear();

@@ -1,7 +1,8 @@
 # Ignore generated Quarkus file logs.
 quarkus.log*
 
-# Ignore IntelliJ's IML files.
+# IntelliJ
+*idea/
 *.iml
 
 .DS_Store/

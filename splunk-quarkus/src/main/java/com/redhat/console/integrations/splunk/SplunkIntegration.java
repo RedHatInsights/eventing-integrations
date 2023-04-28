@@ -62,7 +62,7 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
         @Override
         protected void initialize() {
             setLowerCase(true);
-            setFilterOnMatch​(false); // reverse filtering to only accept selected
+            setFilterOnMatch(false); // reverse filtering to only accept selected
 
             getInFilter().clear();
             getOutFilter().clear();
@@ -127,14 +127,6 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
                 .setHeader(Exchange.HTTP_URI, header("targetUrl"))
                 .setHeader(Exchange.HTTP_PATH, constant("/services/collector/event"))
                 .choice()
-                .when(simple("${header.targetUrl} startsWith 'http://'"))
-                .to(http("dynamic")
-                        .httpMethod("POST")
-                        .headerFilterStrategy(new SplunkHttpHeaderStrategy())
-                        .advanced()
-                        .httpClientConfigurer(getClientConfigurer()))
-                .endChoice()
-                .otherwise()
                 .when(simple("${headers.metadata[trustAll]} == 'true'"))
                 .to(https("dynamic")
                         .sslContextParameters(getTrustAllCACerts())
