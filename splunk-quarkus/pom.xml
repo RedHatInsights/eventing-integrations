@@ -122,7 +122,7 @@
         <dependency>
             <groupId>io.quarkiverse.logging.cloudwatch</groupId>
             <artifactId>quarkus-logging-cloudwatch</artifactId>
-            <version>4.3.1</version>
+            <version>6.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
