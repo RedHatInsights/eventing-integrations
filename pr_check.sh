@@ -32,7 +32,7 @@ podman push "${OLD_IMAGE}:${IMAGE_TAG}"
 export IMAGE=$OLD_IMAGE
 set +x
 
-export COMPONENTS_W_RESOURCES="policies-engine historical-system-profiles system-baseline"
+export COMPONENTS_W_RESOURCES="historical-system-profiles system-baseline"
 source $CICD_ROOT/deploy_ephemeral_env.sh
 
 source $CICD_ROOT/cji_smoke_test.sh
