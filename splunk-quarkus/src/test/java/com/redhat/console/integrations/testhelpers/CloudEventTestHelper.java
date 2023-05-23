@@ -15,7 +15,11 @@ import com.redhat.cloud.notifications.ingress.Metadata;
 import com.redhat.cloud.notifications.ingress.Payload;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.junit.jupiter.api.Assertions;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CloudEventTestHelper {
     /**
@@ -68,7 +72,7 @@ public class CloudEventTestHelper {
 
     /**
      * Builds a test cloud event.
-     * 
+     *
      * @return           the generated cloud event.
      * @throws Exception if any unexpected error occurs.
      */
@@ -109,7 +113,7 @@ public class CloudEventTestHelper {
 
     /**
      * Creates a test action that is what the "Notifications" service would send to the eventing backend.
-     * 
+     *
      * @return the created action.
      */
     public static Action createTestAction() {
@@ -153,41 +157,41 @@ public class CloudEventTestHelper {
     /**
      * Asserts that the received event has the fields and the values that were generated with this class'
      * {@link #buildTestCloudEvent()} function.
-     * 
+     *
      * @param event the event to evaluate.
      */
     public static void assertEventIsTheExpectedOne(final JsonObject event) {
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_VERSION, event.getString("version"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_VERSION, event.getString("version"),
                 "the 'version' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ID_VALUE.toString(), event.getString("id"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_ID_VALUE.toString(), event.getString("id"),
                 "the 'id' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_BUNDLE, event.getString("bundle"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_BUNDLE, event.getString("bundle"),
                 "the 'bundle' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_APPLICATION, event.getString("application"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_APPLICATION, event.getString("application"),
                 "the 'application' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_EVENT_TYPE, event.getString("event_type"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_EVENT_TYPE, event.getString("event_type"),
                 "the 'event_type' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_TIMESTAMP.toString(), event.getString("timestamp"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_TIMESTAMP.format(ISO_DATE_TIME), event.getString("timestamp"),
                 "the 'timestamp' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ORG_ID, event.getString("org_id"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_ORG_ID, event.getString("org_id"),
                 "the 'org_id' field of the action has an unexpected value");
 
         final JsonObject context = event.getJsonObject("context");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_CONTEXT_INTEGRATION_UUID_VALUE.toString(),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_CONTEXT_INTEGRATION_UUID_VALUE.toString(),
                 context.getString("integration-uuid"),
                 "the 'integration-uuid' field of the action's context has an unexpected value");
 
         final JsonArray events = event.getJsonArray("events");
-        Assertions.assertEquals(1, events.size(), "unexpected number of events found in the action");
+        assertEquals(1, events.size(), "unexpected number of events found in the action");
 
         final JsonObject innerEvent = events.getJsonObject(0);
         final JsonObject eventMetadata = innerEvent.getJsonObject("metadata");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_METADATA_VALUE,
+        assertEquals(CloudEventTestHelper.TEST_ACTION_METADATA_VALUE,
                 eventMetadata.getString(CloudEventTestHelper.TEST_ACTION_METADATA_KEY),
                 "the 'metadata' field of the action's event has an unexpected value");
 
         final JsonObject eventPayload = innerEvent.getJsonObject("payload");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_PAYLOAD_VALUE,
+        assertEquals(CloudEventTestHelper.TEST_ACTION_PAYLOAD_VALUE,
                 eventPayload.getString(CloudEventTestHelper.TEST_ACTION_PAYLOAD_KEY),
                 "the 'payload' field of the action's event has an unexpected value");
     }
@@ -196,51 +200,58 @@ public class CloudEventTestHelper {
      * Asserts that the given Splunk payload is generated from the data that was generated in
      * {@link #buildTestCloudEvent()}. The "events" array is not validated since that part is different for every Splunk
      * payload.
-     * 
+     *
      * @param event the event to evaluate.
      */
     public static void assertSplunkPayloadIsTheExpectedOne(final JsonObject event) {
         // Assert the hard coded fields from the payload.
-        Assertions.assertEquals("eventing", event.getString("source"));
-        Assertions.assertEquals("Insights event", event.getString("sourcetype"));
+        assertEquals("eventing", event.getString("source"));
+        assertEquals("Insights event", event.getString("sourcetype"));
 
         final JsonObject innerEvent = event.getJsonObject("event");
 
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_VERSION, innerEvent.getString("version"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_VERSION, innerEvent.getString("version"),
                 "the 'version' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ID_VALUE.toString(), innerEvent.getString("id"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_ID_VALUE.toString(), innerEvent.getString("id"),
                 "the 'id' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_BUNDLE, innerEvent.getString("bundle"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_BUNDLE, innerEvent.getString("bundle"),
                 "the 'bundle' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_APPLICATION, innerEvent.getString("application"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_APPLICATION, innerEvent.getString("application"),
                 "the 'application' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_EVENT_TYPE, innerEvent.getString("event_type"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_EVENT_TYPE, innerEvent.getString("event_type"),
                 "the 'event_type' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_TIMESTAMP.toString(), innerEvent.getString("timestamp"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_TIMESTAMP.format(ISO_DATE_TIME),
+                innerEvent.getString("timestamp"),
                 "the 'timestamp' field of the action has an unexpected value");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_ORG_ID, innerEvent.getString("org_id"),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_ORG_ID, innerEvent.getString("org_id"),
                 "the 'org_id' field of the action has an unexpected value");
 
         final JsonObject context = innerEvent.getJsonObject("context");
-        Assertions.assertEquals(CloudEventTestHelper.TEST_ACTION_CONTEXT_INTEGRATION_UUID_VALUE.toString(),
+        assertEquals(CloudEventTestHelper.TEST_ACTION_CONTEXT_INTEGRATION_UUID_VALUE.toString(),
                 context.getString("integration-uuid"),
                 "the 'integration-uuid' field of the action's context has an unexpected value");
     }
 
     /**
      * Asserts that the received body contains the specified expected message in the "outcome" field.
-     * 
+     *
      * @param receivedBody    the received body from Apache Camel.
      * @param expectedMessage the expected message to find in the "outcome" field of the body.
      */
-    public static void assertOutcomeIs(final String receivedBody, final String expectedMessage) {
+    public static void assertOutcomeAndSuccessfulAre(
+            final String receivedBody, final String expectedMessage, boolean expectedSuccessful) {
         final JsonObject receivedJson = new JsonObject(receivedBody);
-        Assertions.assertNotNull(receivedBody, "the body of the message is empty");
+        assertNotNull(receivedBody, "the body of the message is empty");
 
         final JsonObject receivedData = new JsonObject(receivedJson.getString(CloudEventTestHelper.FIELD_DATA));
-        Assertions.assertNotNull(receivedData, "the cloud event's \"data\" field is missing");
+        assertNotNull(receivedData, "the cloud event's \"data\" field is missing");
 
-        final String outcome = receivedData.getString("outcome");
-        Assertions.assertEquals(expectedMessage, outcome, "unexpected error message received");
+        JsonObject receivedDetails = receivedData.getJsonObject("details");
+        assertNotNull(receivedData, "the cloud event's \"data.details\" field is missing");
+
+        final String outcome = receivedDetails.getString("outcome");
+        assertEquals(expectedMessage, outcome, "unexpected error message received");
+
+        assertEquals(expectedSuccessful, receivedData.getBoolean("successful"), "unexpected successful field value");
     }
 }

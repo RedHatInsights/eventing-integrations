@@ -25,7 +25,7 @@ public class SplunkIntegrationInsecureSchemeTest extends CamelQuarkusTestSupport
      * Signal Camel that when we manipulate the endpoints the routes shouldn't be restarted.
      * <a href="https://camel.apache.org/manual/advice-with.html#_enabling_advice_during_testing"> More information
      * here.</a>
-     * 
+     *
      * @return true.
      */
     @Override
@@ -35,7 +35,7 @@ public class SplunkIntegrationInsecureSchemeTest extends CamelQuarkusTestSupport
 
     /**
      * Specifically creates the Splunk integration's routes.
-     * 
+     *
      * @return the Splunk integration's route builder.
      */
     @Override
@@ -46,7 +46,7 @@ public class SplunkIntegrationInsecureSchemeTest extends CamelQuarkusTestSupport
     /**
      * Tests that when a "target URL" is specified with a "http" scheme, then the "insecure protocol" error is received
      * in the Cloud Event's payload.
-     * 
+     *
      * @throws Exception if any unexpected error occurs.
      */
     @Test
@@ -84,7 +84,6 @@ public class SplunkIntegrationInsecureSchemeTest extends CamelQuarkusTestSupport
         // Make sure that the mocked output receives the expected exchange.
         final MockEndpoint mockedReturnEndpoint = getMockEndpoint("mock:return");
         mockedReturnEndpoint.expectedMessageCount(1);
-        mockedReturnEndpoint.expectedHeaderReceived("outcome-fail", true);
 
         this.template.send("direct:handler", invalidSchemeExchange);
 
@@ -97,6 +96,7 @@ public class SplunkIntegrationInsecureSchemeTest extends CamelQuarkusTestSupport
         final Exchange receivedExchange = receivedExchanges.get(0);
         final Message receivedMessage = receivedExchange.getIn();
 
-        CloudEventTestHelper.assertOutcomeIs(receivedMessage.getBody(String.class), "Insecure protocol is not supported");
+        CloudEventTestHelper.assertOutcomeAndSuccessfulAre(receivedMessage.getBody(String.class),
+                "Insecure protocol is not supported", false);
     }
 }

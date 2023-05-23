@@ -1,7 +1,6 @@
 package com.redhat.console.integrations;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.ProtocolException;
@@ -14,8 +13,7 @@ public class TargetUrlValidator implements Processor {
         UrlValidator httpUrlValidator = new UrlValidator(http_schemes, UrlValidator.ALLOW_LOCAL_URLS);
         UrlValidator httpsUrlValidator = new UrlValidator(https_schemes, UrlValidator.ALLOW_LOCAL_URLS);
 
-        Message in = exchange.getIn();
-        String url = in.getHeader("targetUrl", String.class);
+        String url = exchange.getProperty("targetUrl", String.class);
 
         // we don't support http
         if (httpUrlValidator.isValid(url)) {

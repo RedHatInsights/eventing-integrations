@@ -17,9 +17,12 @@
 package com.redhat.console.integrations;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
+
+import static com.redhat.console.integrations.OutgoingCloudEventBuilder.OUTCOME_EXCHANGE_PROPERTY;
+import static com.redhat.console.integrations.OutgoingCloudEventBuilder.SUCCESSFUL_EXCHANGE_PROPERTY;
 
 /**
  * Configures Error Routes
@@ -27,6 +30,9 @@ import org.apache.camel.Processor;
 
 @ApplicationScoped
 public class ErrorHandlingRoutes extends IntegrationsRouteBuilder {
+
+    @Inject
+    OutgoingCloudEventBuilder outgoingCloudEventBuilder;
 
     @Override
     public void configure() throws Exception {
@@ -38,73 +44,57 @@ public class ErrorHandlingRoutes extends IntegrationsRouteBuilder {
         configureSecureConnectionFailed();
     }
 
-    private void configureSecureConnectionFailed() throws Exception {
-        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
-        Processor resultTransformer = new ResultTransformer();
+    private void configureSecureConnectionFailed() {
         // The error handler when we receive an HTTP (unsecure) connection instead of HTTPS
         from(direct("secureConnectionFailed"))
                 .routeId("secureConnectionFailed")
                 .log(LoggingLevel.ERROR, "ProtocolException for event ${header.ce-id} (orgId ${header.orgId}"
-                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
+                                         + " account ${header.accountId}) to ${exchangeProperty.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
-                .setBody(simple("${exception.message}"))
-                .setHeader("outcome-fail", simple("true"))
-                .process(resultTransformer)
-                .marshal().json()
-                .process(ceEncoder)
+                .setProperty(OUTCOME_EXCHANGE_PROPERTY, simple("${exception.message}"))
+                .setProperty(SUCCESSFUL_EXCHANGE_PROPERTY, constant(false))
+                .process(outgoingCloudEventBuilder)
                 .to(direct("return"));
     }
 
-    private void configureTargetUrlValidationFailed() throws Exception {
-        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
-        Processor resultTransformer = new ResultTransformer();
+    private void configureTargetUrlValidationFailed() {
         // The error handler when we receive a TargetUrlValidator failure
         from(direct("targetUrlValidationFailed"))
                 .routeId("targetUrlValidationFailed")
                 .log(LoggingLevel.ERROR, "IllegalArgumentException for event ${header.ce-id} (orgId ${header.orgId}"
-                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
+                                         + " account ${header.accountId}) to ${exchangeProperty.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
-                .setBody(simple("${exception.message}"))
-                .setHeader("outcome-fail", simple("true"))
-                .process(resultTransformer)
-                .marshal().json()
-                .process(ceEncoder)
+                .setProperty(OUTCOME_EXCHANGE_PROPERTY, simple("${exception.message}"))
+                .setProperty(SUCCESSFUL_EXCHANGE_PROPERTY, constant(false))
+                .process(outgoingCloudEventBuilder)
                 .to(direct("return"));
     }
 
-    private void configureIoFailed() throws Exception {
-        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
-        Processor resultTransformer = new ResultTransformer();
+    private void configureIoFailed() {
         // The error handler found an IO Exception. We set the outcome to fail and then send to kafka
         from(direct("ioFailed"))
                 .routeId("ioFailed")
                 .log(LoggingLevel.ERROR, "IOFailure for event ${header.ce-id} (orgId ${header.orgId}"
-                                         + " account ${header.accountId}) to ${header.targetUrl}: ${exception.message}")
+                                         + " account ${header.accountId}) to ${exchangeProperty.targetUrl}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "${exception.stacktrace}")
-                .setBody(simple("${exception.message}"))
-                .setHeader("outcome-fail", simple("true"))
-                .process(resultTransformer)
-                .marshal().json()
-                .process(ceEncoder)
+                .setProperty(OUTCOME_EXCHANGE_PROPERTY, simple("${exception.message}"))
+                .setProperty(SUCCESSFUL_EXCHANGE_PROPERTY, constant(false))
+                .process(outgoingCloudEventBuilder)
                 .to(direct("return"));
     }
 
-    private void configureHttpFailed() throws Exception {
-        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
-        Processor resultTransformer = new ResultTransformer();
+    private void configureHttpFailed() {
         // The error handler found an HTTP Exception. We set the outcome to fail and then send to kafka
         from(direct("httpFailed"))
                 .routeId("httpFailed")
                 .log(LoggingLevel.ERROR, "HTTPFailure for event ${header.ce-id} (orgId ${header.orgId} account"
-                                         + " ${header.accountId}) to ${header.targetUrl}: ${exception.getStatusCode()}"
+                                         + " ${header.accountId}) to ${exchangeProperty.targetUrl}: ${exception.getStatusCode()}"
                                          + " ${exception.getStatusText()}: ${exception.message}")
                 .log(LoggingLevel.DEBUG, "Response Body: ${exception.getResponseBody()}")
                 .log(LoggingLevel.DEBUG, "Response Headers: ${exception.getResponseHeaders()}")
-                .setBody(simple("${exception.message}"))
-                .setHeader("outcome-fail", simple("true"))
-                .process(resultTransformer)
-                .marshal().json()
-                .process(ceEncoder)
+                .setProperty(OUTCOME_EXCHANGE_PROPERTY, simple("${exception.message}"))
+                .setProperty(SUCCESSFUL_EXCHANGE_PROPERTY, constant(false))
+                .process(outgoingCloudEventBuilder)
                 .to(direct("return"));
     }
 }

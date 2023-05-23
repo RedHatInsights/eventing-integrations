@@ -13,6 +13,8 @@ import org.apache.camel.util.json.Jsoner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 @QuarkusTest
 public class CloudEventDecoderTest extends CamelQuarkusTestSupport {
 
@@ -89,7 +91,7 @@ public class CloudEventDecoderTest extends CamelQuarkusTestSupport {
                 "the cloud event's 'specversion' field does not match");
 
         Assertions.assertEquals(
-                CloudEventTestHelper.TEST_ACTION_TIMESTAMP.toString(),
+                CloudEventTestHelper.TEST_ACTION_TIMESTAMP.format(ISO_DATE_TIME),
                 headers.get(String.format("Ce-%s", CloudEventTestHelper.FIELD_TIME)),
                 "the cloud event's 'time' field does not match");
 

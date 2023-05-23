@@ -17,11 +17,14 @@
 package com.redhat.console.integrations.splunk;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.redhat.console.integrations.EventAppender;
+import com.redhat.console.integrations.EventPicker;
+import com.redhat.console.integrations.IntegrationsRouteBuilder;
+import com.redhat.console.integrations.TargetUrlValidator;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -32,14 +35,6 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.support.jsse.SSLContextParameters;
 import org.apache.camel.support.jsse.TrustManagersParameters;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.ProtocolException;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import com.redhat.console.integrations.IntegrationsRouteBuilder;
-import com.redhat.console.integrations.TargetUrlValidator;
-import com.redhat.console.integrations.EventAppender;
-import com.redhat.console.integrations.EventPicker;
 
 /**
  * The main class that does the work setting up the Camel routes. Entry point for messages is below
@@ -76,7 +71,7 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
         configureHandler();
     }
 
-    private void configureHandler() throws Exception {
+    private void configureHandler() {
         Processor eventPicker = new EventPicker();
         // Receive messages on internal enpoint (within the same JVM)
         // named "splunk".
@@ -90,9 +85,9 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
                 // component.
                 .removeHeaders("CamelHttp*")
 
-                //Add headers useful for error reporting and metrics
-                .setHeader("targetUrl", simple("${headers.metadata[url]}"))
-                .setHeader("timeIn", simpleF("%d", System.currentTimeMillis()))
+                //Add properties useful for error reporting and metrics
+                .setProperty("targetUrl", simple("${headers.metadata[url]}"))
+                .setProperty("timeIn", simpleF("%d", System.currentTimeMillis()))
 
                 //Set Authorization header
                 .setHeader("Authorization", simpleF("Splunk %s", "${headers.metadata[X-Insight-Token]}"))
@@ -124,7 +119,7 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
                 // It sends token via Basic Preemptive Authentication.
                 // POST method is being used, set up explicitly
                 // (see https://camel.apache.org/components/latest/http-component.html#_which_http_method_will_be_used).
-                .setHeader(Exchange.HTTP_URI, header("targetUrl"))
+                .setHeader(Exchange.HTTP_URI, exchangeProperty("targetUrl"))
                 .setHeader(Exchange.HTTP_PATH, constant("/services/collector/event"))
                 .choice()
                 .when(simple("${headers.metadata[trustAll]} == 'true'"))

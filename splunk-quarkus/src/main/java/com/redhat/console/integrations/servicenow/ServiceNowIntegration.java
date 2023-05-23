@@ -62,13 +62,13 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
         configurePush();
     }
 
-    private void configureHandler() throws Exception {
+    private void configureHandler() {
         from(direct("handler"))
                 .routeId("handler")
 
-                //Add headers useful for error reporting and metrics
-                .setHeader("targetUrl", simple("${headers.metadata[url]}"))
-                .setHeader("timeIn", simpleF("%d", System.currentTimeMillis()))
+                //Add properties useful for error reporting and metrics
+                .setProperty("targetUrl", simple("${headers.metadata[url]}"))
+                .setProperty("timeIn", simpleF("%d", System.currentTimeMillis()))
 
                 // body is a JsonObject so converting to consumable object
                 // for the http producer
@@ -81,11 +81,11 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
                 // and password from X-Insight-Token metadata.
                 .process(new BasicAuthenticationProcessor("rh_insights_integration"))
 
-                .setHeader(Exchange.HTTP_URI, header("targetUrl"))
+                .setHeader(Exchange.HTTP_URI, exchangeProperty("targetUrl"))
                 .to(seda("push"));
     }
 
-    private void configurePush() throws Exception {
+    private void configurePush() {
         from(seda("push").concurrentConsumers(10))
             .to(https("dynamic")
                 .httpMethod("POST")

@@ -1,12 +1,13 @@
 package com.redhat.console.integrations;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import static com.redhat.console.integrations.OutgoingCloudEventBuilder.OUTCOME_EXCHANGE_PROPERTY;
+import static com.redhat.console.integrations.OutgoingCloudEventBuilder.SUCCESSFUL_EXCHANGE_PROPERTY;
 
 @ApplicationScoped
 public class MainRoutes extends IntegrationsRouteBuilder {
@@ -15,10 +16,6 @@ public class MainRoutes extends IntegrationsRouteBuilder {
 
     // Only accept/listen on these CloudEvent types
     public static final String CE_TYPE = "com.redhat.console.notification.toCamel." + COMPONENT_NAME;
-
-    // Event incoming kafka brokers
-    @ConfigProperty(name = "kafka.bootstrap.servers")
-    String kafkaBrokers;
 
     // Event incoming Kafka topic
     @ConfigProperty(name = "mp.messaging.kafka.ingress.topic")
@@ -32,12 +29,8 @@ public class MainRoutes extends IntegrationsRouteBuilder {
     @ConfigProperty(name = "mp.messaging.kafka.return.topic")
     String kafkaReturnTopic;
 
-    // Event return kafka group id
-    @ConfigProperty(name = "kafka.return.group.id")
-    String kafkaReturnGroupId;
-
-    // The return type
-    public static final String RETURN_TYPE = "com.redhat.console.notifications.history";
+    @Inject
+    OutgoingCloudEventBuilder outgoingCloudEventBuilder;
 
     @Override
     public void configure() throws Exception {
@@ -50,7 +43,7 @@ public class MainRoutes extends IntegrationsRouteBuilder {
         configureSuccessHandler();
     }
 
-    private void configureIngress() throws Exception {
+    private void configureIngress() {
         from(kafka(kafkaIngressTopic).groupId(kafkaIngressGroupId))
                 .routeId("ingress")
                 // Decode CloudEvent
@@ -65,25 +58,21 @@ public class MainRoutes extends IntegrationsRouteBuilder {
                 .end();
     }
 
-    private void configureReturn() throws Exception {
+    private void configureReturn() {
         from(direct("return"))
                 .routeId("return")
                 .to(kafka(kafkaReturnTopic));
     }
 
-    private void configureSuccessHandler() throws Exception {
-        Processor ceEncoder = new CloudEventEncoder(COMPONENT_NAME, RETURN_TYPE);
-        Processor resultTransformer = new ResultTransformer();
+    private void configureSuccessHandler() {
         // If Event was sent successfully, send success reply to return kafka
         from(direct("success"))
                 .routeId("success")
                 .log("Delivered event ${header.ce-id} (orgId ${header.orgId} account ${header.accountId})"
-                     + " to ${header.targetUrl}")
-                .setBody(simple("Success: Event ${header.ce-id} sent successfully"))
-                .setHeader("outcome-fail", simple("false"))
-                .process(resultTransformer)
-                .marshal().json()
-                .process(ceEncoder)
+                     + " to ${exchangeProperty.targetUrl}")
+                .setProperty(OUTCOME_EXCHANGE_PROPERTY, simple("Event ${header.ce-id} sent successfully"))
+                .setProperty(SUCCESSFUL_EXCHANGE_PROPERTY, constant(true))
+                .process(outgoingCloudEventBuilder)
                 .to(direct("return"));
     }
 
