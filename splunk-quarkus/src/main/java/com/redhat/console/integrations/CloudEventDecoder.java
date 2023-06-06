@@ -45,17 +45,16 @@ public class CloudEventDecoder implements Processor {
         }
 
         // Extract metadata, put it in headers and then delete from the body.
-        JsonObject metaData = (JsonObject) bodyObject.get("notif-metadata");
-        if (metaData != null) {
+        if (bodyObject.containsKey("notif-metadata")) {
+            JsonObject metaData = (JsonObject) bodyObject.get("notif-metadata");
             in.setHeader("metadata", metaData);
+            if (bodyObject.containsKey("extras")) {
+                JsonObject extras = (JsonObject) Jsoner.deserialize(metaData.getString("extras"));
+                in.setHeader("extras", extras);
+            }
         }
-        JsonObject extras = (JsonObject) Jsoner.deserialize(metaData.getString("extras"));
-        if (extras != null) {
-            in.setHeader("extras", extras);
-        }
-        Object accountId = bodyObject.get("account_id");
-        if (accountId != null) {
-            in.setHeader("accountId", accountId);
+        if (bodyObject.containsKey("account_id")) {
+            in.setHeader("accountId", bodyObject.get("account_id"));
         }
         in.setHeader("orgId", bodyObject.get("org_id"));
 
