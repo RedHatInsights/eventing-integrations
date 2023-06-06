@@ -8,7 +8,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static com.redhat.console.integrations.OutgoingCloudEventBuilder.OUTCOME_EXCHANGE_PROPERTY;
 import static com.redhat.console.integrations.OutgoingCloudEventBuilder.SUCCESSFUL_EXCHANGE_PROPERTY;
-import static org.apache.camel.LoggingLevel.INFO;
 
 @ApplicationScoped
 public class MainRoutes extends IntegrationsRouteBuilder {
@@ -47,7 +46,6 @@ public class MainRoutes extends IntegrationsRouteBuilder {
     private void configureIngress() {
         from(kafka(kafkaIngressTopic).groupId(kafkaIngressGroupId))
                 .routeId("ingress")
-                .log(INFO, "Received ${body}") // TODO Temp, remove ASAP
                 // Decode CloudEvent
                 .process(new CloudEventDecoder())
                 // We check that this is our type.
