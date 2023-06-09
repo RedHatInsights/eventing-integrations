@@ -36,7 +36,7 @@ public class SplunkUrlCleanerTest extends CamelQuarkusTestSupport {
         // '/services/collector' path suffix
 
         exchange = createExchangeWithBody("I am not used in this test");
-        exchange.setProperty(TARGET_URL, VALID_TARGET_URL + SERVICES_COLLECTOR);
+        exchange.setProperty(TARGET_URL, VALID_TARGET_URL + "/services/collector");
 
         new SplunkUrlCleaner().process(exchange);
 
@@ -45,7 +45,7 @@ public class SplunkUrlCleanerTest extends CamelQuarkusTestSupport {
         // '/services/collector/event' path suffix
 
         exchange = createExchangeWithBody("I am not used in this test");
-        exchange.setProperty(TARGET_URL, VALID_TARGET_URL + SERVICES_COLLECTOR_EVENT);
+        exchange.setProperty(TARGET_URL, VALID_TARGET_URL + "/services/collector/event");
 
         new SplunkUrlCleaner().process(exchange);
 
