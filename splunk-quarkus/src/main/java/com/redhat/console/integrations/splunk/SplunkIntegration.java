@@ -113,6 +113,7 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
                 .parallelProcessing(true)
                 .completionSize(exchangeProperty("eventsCount"))
                 .process(new TargetUrlValidator()) // validate the TargetUrl to be a proper url
+                .process(new SplunkUrlCleaner())
 
                 // Redirect depending on http or https (different default ports) so that it goes to the default splunk port
                 // Send the message to Splunk's HEC as a splunk formattted event.
