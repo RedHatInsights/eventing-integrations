@@ -5,7 +5,8 @@ import org.apache.camel.Processor;
 
 /**
  * Org admins may create Splunk integrations with or without the '/services/collector/event' path in the Splunk URL.
- * Since we append the '/services/collector/event' path to all Splunk URLs, this processor removes any unwanted URL suffix.
+ * Since we append the '/services/collector/event' path to all Splunk URLs, this processor removes any unwanted URL
+ * suffix.
  */
 public class SplunkUrlCleaner implements Processor {
 
