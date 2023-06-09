@@ -18,6 +18,12 @@ public class SplunkUrlCleanerTest extends CamelQuarkusTestSupport {
     @Test
     void testMultipleUrls() throws Exception {
 
+        /*
+         * For some reason, running multiple @Test methods in the same class leads to an UnsupportedOperationException.
+         * The following testing code is an ugly workaround: multiple things are tested in the same @Test.
+         * This is all temporary as this code will be moved and refactored entirely very soon.
+         */
+
         // Valid URL
 
         Exchange exchange = createExchangeWithBody("I am not used in this test!");
