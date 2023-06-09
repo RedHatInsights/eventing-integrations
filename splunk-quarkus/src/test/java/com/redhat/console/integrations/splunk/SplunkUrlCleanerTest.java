@@ -16,7 +16,9 @@ public class SplunkUrlCleanerTest extends CamelQuarkusTestSupport {
     private static final String VALID_TARGET_URL = "https://i.am.valid.com";
 
     @Test
-    void shouldNotChangeUrlWhenPathIsOk() throws Exception {
+    void testMultipleUrls() throws Exception {
+
+        // Valid URL
 
         Exchange exchange = createExchangeWithBody("I am not used in this test!");
         exchange.setProperty(TARGET_URL, VALID_TARGET_URL);
@@ -24,23 +26,19 @@ public class SplunkUrlCleanerTest extends CamelQuarkusTestSupport {
         new SplunkUrlCleaner().process(exchange);
 
         assertEquals(VALID_TARGET_URL, exchange.getProperty(TARGET_URL, String.class));
-    }
 
-    @Test
-    void shouldRemoveServicesCollectorPath() throws Exception {
+        // '/services/collector' path suffix
 
-        Exchange exchange = createExchangeWithBody("I am not used in this test");
+        exchange = createExchangeWithBody("I am not used in this test");
         exchange.setProperty(TARGET_URL, VALID_TARGET_URL + SERVICES_COLLECTOR);
 
         new SplunkUrlCleaner().process(exchange);
 
         assertEquals(VALID_TARGET_URL, exchange.getProperty(TARGET_URL, String.class));
-    }
 
-    @Test
-    void shouldRemoveServicesCollectorEventPath() throws Exception {
+        // '/services/collector/event' path suffix
 
-        Exchange exchange = createExchangeWithBody("I am not used in this test");
+        exchange = createExchangeWithBody("I am not used in this test");
         exchange.setProperty(TARGET_URL, VALID_TARGET_URL + SERVICES_COLLECTOR_EVENT);
 
         new SplunkUrlCleaner().process(exchange);
