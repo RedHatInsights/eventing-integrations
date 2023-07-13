@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.redhat.console.integrations.EventAppender;
 import com.redhat.console.integrations.EventPicker;
@@ -53,6 +54,9 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 @ApplicationScoped
 public class SplunkIntegration extends IntegrationsRouteBuilder {
 
+    @Inject
+    MigrationFilter migrationFilter;
+
     class SplunkHttpHeaderStrategy extends HttpHeaderFilterStrategy {
         @Override
         protected void initialize() {
@@ -77,6 +81,10 @@ public class SplunkIntegration extends IntegrationsRouteBuilder {
         // named "splunk".
         from(direct("handler"))
                 .routeId("handler")
+
+                // TODO For migration purposes
+                .filter(migrationFilter)
+
                 // Remove headers of previous message,
                 // specifically the ones that HTTP components use
                 // to prevent passing the REST path to the HTTP producer.

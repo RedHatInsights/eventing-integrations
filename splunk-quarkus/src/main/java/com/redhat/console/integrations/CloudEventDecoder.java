@@ -6,6 +6,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.util.json.JsonObject;
 import org.apache.camel.util.json.Jsoner;
 
+import static com.redhat.console.integrations.splunk.MigrationFilter.KAFKA_PROCESSOR;
+
 /**
  * We decode a CloudEvent, set the headers accordingly and put the CE payload as the new body
  */
@@ -47,6 +49,10 @@ public class CloudEventDecoder implements Processor {
         // Extract metadata, put it in headers and then delete from the body.
         if (bodyObject.containsKey("notif-metadata")) {
             JsonObject metaData = (JsonObject) bodyObject.get("notif-metadata");
+
+            // TODO For migration purposes
+            exchange.setProperty(KAFKA_PROCESSOR, metaData.get("kafkaProcessor"));
+
             in.setHeader("metadata", metaData);
             if (bodyObject.containsKey("extras")) {
                 JsonObject extras = (JsonObject) Jsoner.deserialize(metaData.getString("extras"));
