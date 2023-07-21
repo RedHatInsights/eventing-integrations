@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import com.redhat.console.integrations.EventAppender;
 import com.redhat.console.integrations.EventPicker;
 import com.redhat.console.integrations.IntegrationsRouteBuilder;
+import com.redhat.console.integrations.MigrationFilter;
 import com.redhat.console.integrations.TargetUrlValidator;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.camel.Exchange;

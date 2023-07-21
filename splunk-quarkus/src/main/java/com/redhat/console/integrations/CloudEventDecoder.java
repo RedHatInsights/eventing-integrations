@@ -6,7 +6,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.util.json.JsonObject;
 import org.apache.camel.util.json.Jsoner;
 
-import static com.redhat.console.integrations.splunk.MigrationFilter.KAFKA_PROCESSOR;
+import static com.redhat.console.integrations.MigrationFilter.KAFKA_PROCESSOR;
 
 /**
  * We decode a CloudEvent, set the headers accordingly and put the CE payload as the new body

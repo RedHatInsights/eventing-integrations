@@ -1,4 +1,4 @@
-package com.redhat.console.integrations.splunk;
+package com.redhat.console.integrations;
 
 import io.quarkus.logging.Log;
 import org.apache.camel.Exchange;

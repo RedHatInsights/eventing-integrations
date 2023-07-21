@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.redhat.console.integrations.BasicAuthenticationProcessor;
 import com.redhat.console.integrations.IntegrationsRouteBuilder;
+import com.redhat.console.integrations.MigrationFilter;
 import com.redhat.console.integrations.TargetUrlValidator;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.camel.Exchange;
@@ -42,6 +44,9 @@ import org.apache.http.auth.AuthenticationException;
 })
 @ApplicationScoped
 public class ServiceNowIntegration extends IntegrationsRouteBuilder {
+
+    @Inject
+    MigrationFilter migrationFilter;
 
     class ServiceNowHttpHeaderStrategy extends HttpHeaderFilterStrategy {
         @Override
@@ -65,6 +70,9 @@ public class ServiceNowIntegration extends IntegrationsRouteBuilder {
     private void configureHandler() {
         from(direct("handler"))
                 .routeId("handler")
+
+                // TODO For migration purposes
+                .filter(migrationFilter)
 
                 //Add properties useful for error reporting and metrics
                 .setProperty("targetUrl", simple("${headers.metadata[url]}"))
