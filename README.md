@@ -1,3 +1,6 @@
+
+⚠️ **This repository is now archived. The integrations have been moved to the [notifications-backend](https://github.com/RedHatInsights/notifications-backend) repository.** ⚠️
+
 # Eventing – 3rd-party Integrations
 
 ConsoleDot events integrations with 3rd-party tools (such as Splunk)
